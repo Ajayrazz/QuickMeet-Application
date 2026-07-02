@@ -10,6 +10,7 @@ exports.NotificationsModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const notifications_service_1 = require("./notifications.service");
+const notification_service_1 = require("./notification.service");
 const notifications_controller_1 = require("./notifications.controller");
 const expo_push_provider_1 = require("./providers/expo-push.provider");
 const console_provider_1 = require("./providers/console.provider");
@@ -32,8 +33,9 @@ exports.NotificationsModule = NotificationsModule = __decorate([
                 inject: [config_1.ConfigService],
             },
             notifications_service_1.NotificationsService,
+            notification_service_1.NotificationService,
         ],
-        exports: [notifications_service_1.NotificationsService],
+        exports: [notifications_service_1.NotificationsService, notification_service_1.NotificationService],
     })
 ], NotificationsModule);
 //# sourceMappingURL=notifications.module.js.map

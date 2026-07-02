@@ -1,6 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotificationsService } from './notifications.service';
+import { NotificationService } from './notification.service';
 import { NotificationsController } from './notifications.controller';
 import { ExpoPushProvider } from './providers/expo-push.provider';
 import { ConsoleNotificationProvider } from './providers/console.provider';
@@ -20,7 +21,8 @@ import { ConsoleNotificationProvider } from './providers/console.provider';
       inject: [ConfigService],
     },
     NotificationsService,
+    NotificationService,
   ],
-  exports: [NotificationsService],
+  exports: [NotificationsService, NotificationService],
 })
 export class NotificationsModule {}

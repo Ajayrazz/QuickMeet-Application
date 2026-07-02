@@ -6,6 +6,8 @@ import { useAuthStore } from '../../src/stores/auth.store';
 import { QRTicket } from '../../src/components/domain/QRTicket';
 import { QueuePositionBadge } from '../../src/components/domain/QueuePositionBadge';
 import { EmptyState } from '../../src/components/ui/Misc';
+import { useQueueSocket } from '../../src/hooks/useQueueSocket';
+import { Text } from 'react-native';
 import { Button } from '../../src/components/ui/Button';
 
 export default function BookingDetailScreen() {
@@ -33,10 +35,7 @@ export default function BookingDetailScreen() {
     );
   }
 
-  // Find user's position in snapshot
-  const myQueueData = queueSnapshot?.find(q => q.userId === user?.id);
-  const position = myQueueData?.position ?? null;
-  const eta = myQueueData?.etaMinutes ?? 0;
+  const { position, eta, isConnected, isYourTurn } = useQueueSocket(booking.slotId, queueSnapshot || undefined);
 
   const handleCancel = () => {
     Alert.alert(
@@ -66,13 +65,30 @@ export default function BookingDetailScreen() {
       <ScrollView contentContainerClassName="p-6 pb-24">
         <QRTicket booking={booking} />
         
-        <View className="mt-2">
+        <View className="mt-2 relative">
           <QueuePositionBadge 
             position={position} 
             eta={eta} 
             isLoading={isQueueLoading} 
           />
+          {/* Connection Status Indicator */}
+          {!isQueueLoading && position !== null && (
+            <View className="absolute top-2 right-2 flex-row items-center bg-background/80 dark:bg-background-dark/80 px-2 py-1 rounded-full">
+              <View className={`w-2 h-2 rounded-full mr-1 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+              <Text className="text-xs text-text-muted dark:text-text-muted-dark font-medium">
+                {isConnected ? 'Live' : 'Reconnecting...'}
+              </Text>
+            </View>
+          )}
         </View>
+
+        {isYourTurn && (
+          <View className="mt-4 bg-green-500/20 border border-green-500 p-4 rounded-xl flex-row items-center justify-center">
+            <Text className="text-green-700 dark:text-green-400 font-bold text-lg text-center">
+              🎉 You're Next! Please proceed to the desk.
+            </Text>
+          </View>
+        )}
 
         {isCancellable && (
           <View className="mt-8">
