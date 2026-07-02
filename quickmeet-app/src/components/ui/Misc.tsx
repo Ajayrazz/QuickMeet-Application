@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Animated, Image } from 'react-native';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/cn';
@@ -77,7 +77,7 @@ export const Avatar = ({ url, fallback, size = 'md', className }: AvatarProps) =
 
 // --- Skeleton ---
 export const Skeleton = ({ className, ...props }: React.ComponentPropsWithoutRef<typeof View>) => {
-  const fadeAnim = useRef(new Animated.Value(0.5)).current;
+  const [fadeAnim] = useState(() => new Animated.Value(0.5));
 
   useEffect(() => {
     Animated.loop(

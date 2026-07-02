@@ -4,8 +4,9 @@ import { useAuthStore } from '../stores/auth.store';
 import * as Haptics from 'expo-haptics';
 
 export interface QueueData {
+  bookingId?: string; // Present in snapshot, may not be in socket payload depending on backend
   userId: string;
-  position: number;
+  position: number | null;
   etaMinutes: number;
 }
 
@@ -20,8 +21,10 @@ export function useQueueSocket(slotId: string, initialSnapshot?: QueueData[]) {
   useEffect(() => {
     // If initial snapshot is provided and we aren't connected yet, pre-fill it.
     if (initialSnapshot && initialSnapshot.length > 0 && fullQueue.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFullQueue(initialSnapshot);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSnapshot]);
 
   useEffect(() => {
@@ -35,9 +38,10 @@ export function useQueueSocket(slotId: string, initialSnapshot?: QueueData[]) {
   useEffect(() => {
     if (!accessToken) return;
 
-    if (!queueSocket.connected) {
+    if (!isConnected) {
       connectQueueSocket(accessToken);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsConnected(true);
     }
 
@@ -69,6 +73,7 @@ export function useQueueSocket(slotId: string, initialSnapshot?: QueueData[]) {
       queueSocket.off('queue:update', onQueueUpdate);
       queueSocket.off('queue:your-turn', onYourTurn);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slotId, accessToken]);
 
   const myData = fullQueue.find((q) => q.userId === user?.id);

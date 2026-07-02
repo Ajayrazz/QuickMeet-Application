@@ -4,7 +4,7 @@ export interface Booking {
   id: string;
   slotId: string;
   userId: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'NO_SHOW' | 'SERVED';
+  status: 'PENDING' | 'CONFIRMED' | 'IN_QUEUE' | 'CANCELLED' | 'NO_SHOW' | 'SERVED';
   queuePosition: number | null;
   qrCode: string;
   slot?: {

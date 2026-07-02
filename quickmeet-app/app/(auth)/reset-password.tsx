@@ -20,6 +20,7 @@ export default function ResetPasswordScreen() {
 
   useEffect(() => {
     if (params.token && typeof params.token === 'string') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTokenParam(params.token);
     }
   }, [params.token]);

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAppointmentTypes, fetchAppointmentType, AppointmentType } from '../api/appointmentTypes.api';
+import { fetchAppointmentTypes, fetchAppointmentType } from '../api/appointmentTypes.api';
 
 export const useAppointmentTypes = (search?: string, category?: string) => {
   return useQuery({

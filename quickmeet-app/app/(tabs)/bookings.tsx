@@ -16,7 +16,7 @@ export default function BookingsHistoryScreen() {
 
   // Filter local data based on tabs to avoid over-fetching
   const getFilteredBookings = (): Booking[] => {
-    if (!bookings) return [];
+    if (!bookings || !Array.isArray(bookings)) return [];
     
     switch (activeTab) {
       case 'UPCOMING':

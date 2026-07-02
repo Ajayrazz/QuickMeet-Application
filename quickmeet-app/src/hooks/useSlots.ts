@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchSlots, Slot } from '../api/slots.api';
+import { fetchSlots } from '../api/slots.api';
 
 export const useSlots = (appointmentTypeId: string, dateStr: string) => {
   return useQuery({

@@ -11,7 +11,7 @@ import '../src/global.css';
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const { hasSeenOnboarding, colorScheme } = useUIStore();
   const segments = useSegments();
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function RootLayout() {
   useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboardingGroup = segments[0] === '(onboarding)';
+    const inAdminGroup = (segments[0] as string) === '(admin)';
+    const inTabsGroup = segments[0] === '(tabs)';
 
     if (!isAuthenticated) {
       if (!hasSeenOnboarding && !inOnboardingGroup) {
@@ -27,11 +29,24 @@ export default function RootLayout() {
         router.replace('/(auth)/login');
       }
     } else {
+      const isAdmin = user?.role === 'ADMIN';
+
       if (inAuthGroup || inOnboardingGroup) {
+        // Just logged in or already logged in
+        if (isAdmin) {
+          router.replace('/(admin)/dashboard' as any);
+        } else {
+          router.replace('/(tabs)');
+        }
+      } else if (inAdminGroup && !isAdmin) {
+        // Prevent non-admins from accessing admin routes
         router.replace('/(tabs)');
+      } else if (!inAdminGroup && isAdmin) {
+        // Force admins into admin routes
+        router.replace('/(admin)/dashboard' as any);
       }
     }
-  }, [isAuthenticated, hasSeenOnboarding, segments]);
+  }, [isAuthenticated, hasSeenOnboarding, segments, user]);
 
   return (
     <QueryClientProvider client={queryClient}>

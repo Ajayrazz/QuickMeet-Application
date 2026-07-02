@@ -19,6 +19,12 @@ export default function BookingDetailScreen() {
   const { data: queueSnapshot, isLoading: isQueueLoading } = useQueueSnapshot(booking?.slotId || '');
   const cancelBooking = useCancelBooking();
 
+  const slotIdForSocket = booking?.status === 'IN_QUEUE' && booking?.slotId ? booking.slotId : '';
+  const { position, eta, isConnected, isYourTurn } = useQueueSocket(
+    slotIdForSocket,
+    queueSnapshot || undefined
+  );
+
   if (isBookingLoading) {
     return (
       <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
@@ -34,8 +40,6 @@ export default function BookingDetailScreen() {
       </View>
     );
   }
-
-  const { position, eta, isConnected, isYourTurn } = useQueueSocket(booking.slotId, queueSnapshot || undefined);
 
   const handleCancel = () => {
     Alert.alert(
@@ -85,7 +89,7 @@ export default function BookingDetailScreen() {
         {isYourTurn && (
           <View className="mt-4 bg-green-500/20 border border-green-500 p-4 rounded-xl flex-row items-center justify-center">
             <Text className="text-green-700 dark:text-green-400 font-bold text-lg text-center">
-              🎉 You're Next! Please proceed to the desk.
+              🎉 You&apos;re Next! Please proceed to the desk.
             </Text>
           </View>
         )}

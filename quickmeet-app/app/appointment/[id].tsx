@@ -46,7 +46,7 @@ export default function AppointmentDetailScreen() {
   const handleBookSlot = () => {
     if (!selectedSlot) return;
 
-    if (!user?.isEmailVerified) {
+    if (!user?.isVerified) {
       router.push('/(auth)/verify-pending');
       return;
     }
@@ -124,7 +124,7 @@ export default function AppointmentDetailScreen() {
       {/* Bottom Action Bar */}
       <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/90 dark:bg-background-dark/90 border-t border-border dark:border-border-dark">
         <Button 
-          label={isFull ? "Slot Full" : !user?.isEmailVerified ? "Verify Email to Book" : "Book This Slot"}
+          label={isFull ? "Slot Full" : !user?.isVerified ? "Verify Email to Book" : "Book This Slot"}
           onPress={handleBookSlot}
           disabled={!selectedSlot || createBooking.isPending || isFull}
           loading={createBooking.isPending}
