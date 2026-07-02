@@ -55,6 +55,7 @@ export declare class BookingsService {
             bookedAt: Date;
             servedAt: Date | null;
             cancelledAt: Date | null;
+            reminderJobId: string | null;
         })[];
         meta: {
             total: number;
@@ -95,6 +96,7 @@ export declare class BookingsService {
         bookedAt: Date;
         servedAt: Date | null;
         cancelledAt: Date | null;
+        reminderJobId: string | null;
     }>;
     getQueueSnapshot(slotId: string): Promise<{
         bookingId: any;

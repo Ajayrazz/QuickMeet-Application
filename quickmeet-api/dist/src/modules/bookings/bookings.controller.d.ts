@@ -1,9 +1,11 @@
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/booking.dto';
+import { QueueService } from '../queue/queue.service';
 import { BookingStatus } from '@prisma/client';
 export declare class BookingsController {
     private readonly bookingsService;
-    constructor(bookingsService: BookingsService);
+    private readonly queueService;
+    constructor(bookingsService: BookingsService, queueService: QueueService);
     create(user: any, dto: CreateBookingDto): Promise<any>;
     cancel(user: any, id: string): Promise<{
         message: string;
@@ -47,6 +49,7 @@ export declare class BookingsController {
             bookedAt: Date;
             servedAt: Date | null;
             cancelledAt: Date | null;
+            reminderJobId: string | null;
         })[];
         meta: {
             total: number;
@@ -87,11 +90,7 @@ export declare class BookingsController {
         bookedAt: Date;
         servedAt: Date | null;
         cancelledAt: Date | null;
+        reminderJobId: string | null;
     }>;
-    getQueueSnapshot(slotId: string): Promise<{
-        bookingId: any;
-        userId: any;
-        position: any;
-        etaMinutes: number;
-    }[]>;
+    getQueueSnapshot(slotId: string): Promise<import("../queue/queue.service").QueueSnapshotItem[]>;
 }

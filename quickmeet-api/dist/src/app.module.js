@@ -18,6 +18,10 @@ const notifications_module_1 = require("./modules/notifications/notifications.mo
 const appointment_types_module_1 = require("./modules/appointment-types/appointment-types.module");
 const slots_module_1 = require("./modules/slots/slots.module");
 const bookings_module_1 = require("./modules/bookings/bookings.module");
+const redis_module_1 = require("./redis/redis.module");
+const users_module_1 = require("./modules/users/users.module");
+const queue_module_1 = require("./modules/queue/queue.module");
+const bullmq_module_1 = require("./jobs/bullmq.module");
 const nestjs_pino_1 = require("nestjs-pino");
 const event_emitter_1 = require("@nestjs/event-emitter");
 let AppModule = class AppModule {
@@ -48,6 +52,10 @@ exports.AppModule = AppModule = __decorate([
             appointment_types_module_1.AppointmentTypesModule,
             slots_module_1.SlotsModule,
             bookings_module_1.BookingsModule,
+            redis_module_1.RedisModule,
+            users_module_1.UsersModule,
+            queue_module_1.QueueModule,
+            bullmq_module_1.JobsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

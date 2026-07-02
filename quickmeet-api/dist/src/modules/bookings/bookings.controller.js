@@ -16,6 +16,7 @@ exports.BookingsController = void 0;
 const common_1 = require("@nestjs/common");
 const bookings_service_1 = require("./bookings.service");
 const booking_dto_1 = require("./dto/booking.dto");
+const queue_service_1 = require("../queue/queue.service");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
@@ -23,8 +24,10 @@ const current_user_decorator_1 = require("../../common/decorators/current-user.d
 const client_1 = require("@prisma/client");
 let BookingsController = class BookingsController {
     bookingsService;
-    constructor(bookingsService) {
+    queueService;
+    constructor(bookingsService, queueService) {
         this.bookingsService = bookingsService;
+        this.queueService = queueService;
     }
     async create(user, dto) {
         if (!user.isVerified) {
@@ -52,7 +55,7 @@ let BookingsController = class BookingsController {
         return this.bookingsService.findOne(user.id, id, isAdmin);
     }
     async getQueueSnapshot(slotId) {
-        return this.bookingsService.getQueueSnapshot(slotId);
+        return this.queueService.getSnapshot(slotId);
     }
 };
 exports.BookingsController = BookingsController;
@@ -123,6 +126,7 @@ __decorate([
 ], BookingsController.prototype, "getQueueSnapshot", null);
 exports.BookingsController = BookingsController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [bookings_service_1.BookingsService])
+    __metadata("design:paramtypes", [bookings_service_1.BookingsService,
+        queue_service_1.QueueService])
 ], BookingsController);
 //# sourceMappingURL=bookings.controller.js.map

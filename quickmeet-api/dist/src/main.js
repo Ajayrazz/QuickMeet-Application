@@ -7,6 +7,7 @@ const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const common_1 = require("@nestjs/common");
 const helmet_1 = __importDefault(require("helmet"));
+const redis_io_adapter_1 = require("./redis/redis-io.adapter");
 const nestjs_pino_1 = require("nestjs-pino");
 const config_1 = require("@nestjs/config");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
@@ -21,6 +22,9 @@ async function bootstrap() {
         transform: true,
     }));
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
+    const redisIoAdapter = new redis_io_adapter_1.RedisIoAdapter(app);
+    await redisIoAdapter.connectToRedis();
+    app.useWebSocketAdapter(redisIoAdapter);
     const configService = app.get(config_1.ConfigService);
     const port = configService.get('PORT') || 3000;
     await app.listen(port);

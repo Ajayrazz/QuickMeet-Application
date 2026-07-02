@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/booking.dto';
+import { QueueService } from '../queue/queue.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -9,7 +10,10 @@ import { Role, BookingStatus } from '@prisma/client';
 
 @Controller()
 export class BookingsController {
-  constructor(private readonly bookingsService: BookingsService) {}
+  constructor(
+    private readonly bookingsService: BookingsService,
+    private readonly queueService: QueueService
+  ) {}
 
   @Post('bookings')
   @UseGuards(JwtAuthGuard)
@@ -63,6 +67,6 @@ export class BookingsController {
 
   @Get('queue/:slotId')
   async getQueueSnapshot(@Param('slotId') slotId: string) {
-    return this.bookingsService.getQueueSnapshot(slotId);
+    return this.queueService.getSnapshot(slotId);
   }
 }

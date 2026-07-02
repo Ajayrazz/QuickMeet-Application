@@ -8,15 +8,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationsModule = void 0;
 const common_1 = require("@nestjs/common");
-const notification_service_1 = require("./notification.service");
+const config_1 = require("@nestjs/config");
+const notifications_service_1 = require("./notifications.service");
+const notifications_controller_1 = require("./notifications.controller");
+const expo_push_provider_1 = require("./providers/expo-push.provider");
+const console_provider_1 = require("./providers/console.provider");
 let NotificationsModule = class NotificationsModule {
 };
 exports.NotificationsModule = NotificationsModule;
 exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        providers: [notification_service_1.NotificationService],
-        exports: [notification_service_1.NotificationService],
+        controllers: [notifications_controller_1.NotificationsController],
+        providers: [
+            {
+                provide: 'NOTIFICATION_PROVIDER',
+                useFactory: (configService) => {
+                    const provider = configService.get('NOTIFICATION_PROVIDER');
+                    return provider === 'expo' ? new expo_push_provider_1.ExpoPushProvider() : new console_provider_1.ConsoleNotificationProvider();
+                },
+                inject: [config_1.ConfigService],
+            },
+            notifications_service_1.NotificationsService,
+        ],
+        exports: [notifications_service_1.NotificationsService],
     })
 ], NotificationsModule);
 //# sourceMappingURL=notifications.module.js.map

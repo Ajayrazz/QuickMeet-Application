@@ -110,6 +110,7 @@ model Booking {
   bookedAt      DateTime      @default(now())
   servedAt      DateTime?
   cancelledAt   DateTime?
+  reminderJobId String?
   
   notifications Notification[]
 

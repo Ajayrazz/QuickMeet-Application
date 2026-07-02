@@ -9,6 +9,10 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AppointmentTypesModule } from './modules/appointment-types/appointment-types.module';
 import { SlotsModule } from './modules/slots/slots.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { RedisModule } from './redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
+import { QueueModule } from './modules/queue/queue.module';
+import { JobsModule } from './jobs/bullmq.module';
 import { LoggerModule } from 'nestjs-pino';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
@@ -36,6 +40,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AppointmentTypesModule,
     SlotsModule,
     BookingsModule,
+    RedisModule,
+    UsersModule,
+    QueueModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
