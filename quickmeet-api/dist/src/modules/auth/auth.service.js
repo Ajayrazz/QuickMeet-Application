@@ -33,7 +33,9 @@ let AuthService = class AuthService {
         return (0, crypto_1.randomBytes)(32).toString('hex');
     }
     async register(dto) {
-        const existingUser = await this.prisma.user.findUnique({ where: { email: dto.email } });
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: dto.email },
+        });
         if (existingUser) {
             throw new domain_exceptions_1.UserAlreadyExistsException();
         }
@@ -56,7 +58,9 @@ let AuthService = class AuthService {
             },
         });
         await this.notificationService.sendVerificationEmail(user.email, `${user.id}:${verifyTokenRaw}`);
-        return { message: 'Registration successful. Please check your email to verify.' };
+        return {
+            message: 'Registration successful. Please check your email to verify.',
+        };
     }
     async verifyEmail(token) {
         const parts = token.split(':');
@@ -65,23 +69,27 @@ let AuthService = class AuthService {
         }
         const [userId, rawToken] = parts;
         const vTokens = await this.prisma.verificationToken.findMany({
-            where: { userId, type: 'EMAIL_VERIFY', expiresAt: { gt: new Date() } }
+            where: { userId, type: 'EMAIL_VERIFY', expiresAt: { gt: new Date() } },
         });
         for (const vToken of vTokens) {
             const isValid = await (0, hash_util_1.verifyHash)(vToken.tokenHash, rawToken);
             if (isValid) {
                 await this.prisma.user.update({
                     where: { id: userId },
-                    data: { isVerified: true }
+                    data: { isVerified: true },
                 });
-                await this.prisma.verificationToken.delete({ where: { id: vToken.id } });
+                await this.prisma.verificationToken.delete({
+                    where: { id: vToken.id },
+                });
                 return { message: 'Email verified successfully.' };
             }
         }
         throw new domain_exceptions_1.TokenExpiredException();
     }
     async login(dto, deviceInfo) {
-        const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+        const user = await this.prisma.user.findUnique({
+            where: { email: dto.email },
+        });
         if (!user) {
             throw new domain_exceptions_1.InvalidCredentialsException();
         }
@@ -98,16 +106,18 @@ let AuthService = class AuthService {
         }
         const [userId, rawToken] = parts;
         const activeTokens = await this.prisma.refreshToken.findMany({
-            where: { userId, revokedAt: null, expiresAt: { gt: new Date() } }
+            where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
         });
         for (const t of activeTokens) {
             const isValid = await (0, hash_util_1.verifyHash)(t.tokenHash, rawToken);
             if (isValid) {
                 await this.prisma.refreshToken.update({
                     where: { id: t.id },
-                    data: { revokedAt: new Date() }
+                    data: { revokedAt: new Date() },
                 });
-                const user = await this.prisma.user.findUnique({ where: { id: userId } });
+                const user = await this.prisma.user.findUnique({
+                    where: { id: userId },
+                });
                 if (!user)
                     throw new common_1.UnauthorizedException('User not found');
                 return this.generateTokens(user, deviceInfo);
@@ -121,14 +131,14 @@ let AuthService = class AuthService {
             return { message: 'Logged out' };
         const [userId, rawToken] = parts;
         const activeTokens = await this.prisma.refreshToken.findMany({
-            where: { userId, revokedAt: null }
+            where: { userId, revokedAt: null },
         });
         for (const t of activeTokens) {
             const isValid = await (0, hash_util_1.verifyHash)(t.tokenHash, rawToken);
             if (isValid) {
                 await this.prisma.refreshToken.update({
                     where: { id: t.id },
-                    data: { revokedAt: new Date() }
+                    data: { revokedAt: new Date() },
                 });
                 break;
             }
@@ -136,7 +146,9 @@ let AuthService = class AuthService {
         return { message: 'Logged out successfully' };
     }
     async forgotPassword(dto) {
-        const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+        const user = await this.prisma.user.findUnique({
+            where: { email: dto.email },
+        });
         if (!user)
             return { message: 'If the email exists, a reset link will be sent.' };
         const resetTokenRaw = this.generateRandomToken();
@@ -147,7 +159,7 @@ let AuthService = class AuthService {
                 tokenHash,
                 type: 'PASSWORD_RESET',
                 expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
-            }
+            },
         });
         await this.notificationService.sendPasswordResetEmail(user.email, `${user.id}:${resetTokenRaw}`);
         return { message: 'If the email exists, a reset link will be sent.' };
@@ -158,7 +170,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException('Invalid token format');
         const [userId, rawToken] = parts;
         const vTokens = await this.prisma.verificationToken.findMany({
-            where: { userId, type: 'PASSWORD_RESET', expiresAt: { gt: new Date() } }
+            where: { userId, type: 'PASSWORD_RESET', expiresAt: { gt: new Date() } },
         });
         for (const vToken of vTokens) {
             const isValid = await (0, hash_util_1.verifyHash)(vToken.tokenHash, rawToken);
@@ -166,10 +178,10 @@ let AuthService = class AuthService {
                 const passwordHash = await (0, hash_util_1.hashString)(dto.newPassword);
                 await this.prisma.user.update({
                     where: { id: userId },
-                    data: { passwordHash }
+                    data: { passwordHash },
                 });
                 await this.prisma.verificationToken.deleteMany({
-                    where: { userId, type: 'PASSWORD_RESET' }
+                    where: { userId, type: 'PASSWORD_RESET' },
                 });
                 return { message: 'Password reset successfully' };
             }
@@ -177,7 +189,11 @@ let AuthService = class AuthService {
         throw new domain_exceptions_1.TokenExpiredException();
     }
     async generateTokens(user, deviceInfo) {
-        const payload = { sub: user.id, role: user.role, isVerified: user.isVerified };
+        const payload = {
+            sub: user.id,
+            role: user.role,
+            isVerified: user.isVerified,
+        };
         const accessToken = this.jwtService.sign(payload, {
             secret: this.configService.get('JWT_ACCESS_SECRET'),
             expiresIn: this.configService.get('JWT_ACCESS_EXPIRY'),
@@ -192,11 +208,11 @@ let AuthService = class AuthService {
                 tokenHash,
                 deviceInfo,
                 expiresAt: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
-            }
+            },
         });
         return {
             accessToken,
-            refreshToken: `${user.id}:${rawRefreshToken}`
+            refreshToken: `${user.id}:${rawRefreshToken}`,
         };
     }
     async generateEmailVerificationTokenStr(userId, rawToken) {

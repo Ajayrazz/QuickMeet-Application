@@ -39,7 +39,7 @@ let QueueGateway = QueueGateway_1 = class QueueGateway {
                 throw new Error('No token');
         }
         catch (e) {
-            this.logger.warn('Client connection rejected');
+            this.logger.warn(`Client connection rejected: ${e.message}`);
             client.disconnect();
         }
     }

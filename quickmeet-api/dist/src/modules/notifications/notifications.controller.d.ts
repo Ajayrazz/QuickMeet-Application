@@ -1,8 +1,9 @@
 import { NotificationsService } from './notifications.service';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 export declare class NotificationsController {
     private readonly notificationsService;
     constructor(notificationsService: NotificationsService);
-    getMyNotifications(user: any, page?: string, limit?: string): Promise<{
+    getMyNotifications(user: any, pagination?: PaginationQueryDto): Promise<{
         data: {
             type: string;
             id: string;

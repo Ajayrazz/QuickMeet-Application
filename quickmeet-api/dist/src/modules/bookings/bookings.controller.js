@@ -17,10 +17,12 @@ const common_1 = require("@nestjs/common");
 const bookings_service_1 = require("./bookings.service");
 const booking_dto_1 = require("./dto/booking.dto");
 const queue_service_1 = require("../queue/queue.service");
+const throttler_1 = require("@nestjs/throttler");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
+const pagination_dto_1 = require("../../common/dto/pagination.dto");
 const client_1 = require("@prisma/client");
 let BookingsController = class BookingsController {
     bookingsService;
@@ -45,10 +47,10 @@ let BookingsController = class BookingsController {
     async noShow(user, id) {
         return this.bookingsService.noShow(user.id, id);
     }
-    async findMyBookings(user, status, page, limit) {
-        const pageNumber = page ? parseInt(page, 10) : 1;
-        const limitNumber = limit ? parseInt(limit, 10) : 10;
-        return this.bookingsService.findMyBookings(user.id, status, pageNumber, limitNumber);
+    async findMyBookings(user, status, pagination) {
+        const page = pagination?.page || 1;
+        const limit = pagination?.limit || 10;
+        return this.bookingsService.findMyBookings(user.id, status, page, limit);
     }
     async findOne(user, id) {
         const isAdmin = user.role === client_1.Role.ADMIN;
@@ -60,6 +62,7 @@ let BookingsController = class BookingsController {
 };
 exports.BookingsController = BookingsController;
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
     (0, common_1.Post)('bookings'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
@@ -102,10 +105,9 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Query)('status')),
-    __param(2, (0, common_1.Query)('page')),
-    __param(3, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:paramtypes", [Object, String, pagination_dto_1.PaginationQueryDto]),
     __metadata("design:returntype", Promise)
 ], BookingsController.prototype, "findMyBookings", null);
 __decorate([

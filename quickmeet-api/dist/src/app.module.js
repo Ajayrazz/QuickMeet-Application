@@ -9,6 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const throttler_1 = require("@nestjs/throttler");
+const nestjs_throttler_storage_redis_1 = require("nestjs-throttler-storage-redis");
+const redis_service_1 = require("./redis/redis.service");
+const core_1 = require("@nestjs/core");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const env_config_1 = require("./config/env.config");
@@ -22,6 +26,8 @@ const redis_module_1 = require("./redis/redis.module");
 const users_module_1 = require("./modules/users/users.module");
 const queue_module_1 = require("./modules/queue/queue.module");
 const bullmq_module_1 = require("./jobs/bullmq.module");
+const analytics_module_1 = require("./modules/analytics/analytics.module");
+const health_module_1 = require("./health/health.module");
 const nestjs_pino_1 = require("nestjs-pino");
 const event_emitter_1 = require("@nestjs/event-emitter");
 let AppModule = class AppModule {
@@ -42,10 +48,34 @@ exports.AppModule = AppModule = __decorate([
                             singleLine: true,
                         },
                     },
-                    redact: ['req.headers.authorization', 'req.body.password', 'req.body.token', 'req.body.refreshToken'],
+                    redact: {
+                        paths: [
+                            'req.headers.authorization',
+                            'req.headers.cookie',
+                            'body.password',
+                            'body.token',
+                            'body.refreshToken',
+                            'body.pushToken',
+                        ],
+                        censor: '[REDACTED]',
+                    },
                 },
             }),
             event_emitter_1.EventEmitterModule.forRoot(),
+            throttler_1.ThrottlerModule.forRootAsync({
+                imports: [redis_module_1.RedisModule],
+                inject: [redis_service_1.RedisService],
+                useFactory: (redisService) => ({
+                    throttlers: [
+                        {
+                            name: 'default',
+                            ttl: 60000,
+                            limit: 100,
+                        },
+                    ],
+                    storage: new nestjs_throttler_storage_redis_1.ThrottlerStorageRedisService(redisService.getClient()),
+                }),
+            }),
             prisma_module_1.PrismaModule,
             notifications_module_1.NotificationsModule,
             auth_module_1.AuthModule,
@@ -56,9 +86,17 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             queue_module_1.QueueModule,
             bullmq_module_1.JobsModule,
+            analytics_module_1.AnalyticsModule,
+            health_module_1.HealthModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

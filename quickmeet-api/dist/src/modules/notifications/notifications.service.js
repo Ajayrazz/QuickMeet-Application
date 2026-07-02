@@ -40,7 +40,9 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
                 select: { pushToken: true },
             });
             if (user && user.pushToken) {
-                this.provider.sendPush(user.pushToken, title, body, { type, relatedBookingId }).catch((err) => {
+                this.provider
+                    .sendPush(user.pushToken, title, body, { type, relatedBookingId })
+                    .catch((err) => {
                     this.logger.error('Failed to send push inside promise catch', err);
                 });
             }
@@ -65,7 +67,9 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
         };
     }
     async markAsRead(userId, id) {
-        const notification = await this.prisma.notification.findUnique({ where: { id } });
+        const notification = await this.prisma.notification.findUnique({
+            where: { id },
+        });
         if (!notification || notification.userId !== userId) {
             return null;
         }

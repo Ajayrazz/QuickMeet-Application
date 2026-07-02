@@ -30,16 +30,20 @@ let QueueEventsListener = QueueEventsListener_1 = class QueueEventsListener {
     async handleBookingCreated(event) {
         this.logger.log(`Processing BookingCreatedEvent for slot ${event.slotId}`);
         const snapshot = await this.queueService.rebuildAndCacheSnapshot(event.slotId);
-        this.queueGateway.server.to(`slot:${event.slotId}`).emit('queue:update', snapshot);
+        this.queueGateway.server
+            .to(`slot:${event.slotId}`)
+            .emit('queue:update', snapshot);
         await this.notificationsService.sendNotification(event.userId, 'BOOKING_CREATED', 'Booking Confirmed!', `You are now in the queue at position ${event.queuePosition}.`, event.bookingId);
     }
     async handleQueueCompacted(event) {
         this.logger.log(`Processing compaction for slot ${event.slotId} (removed pos ${event.removedPosition})`);
         const snapshot = await this.queueService.rebuildAndCacheSnapshot(event.slotId);
-        this.queueGateway.server.to(`slot:${event.slotId}`).emit('queue:update', snapshot);
+        this.queueGateway.server
+            .to(`slot:${event.slotId}`)
+            .emit('queue:update', snapshot);
         for (const b of event.affectedBookings) {
             if (b.newPosition === 1) {
-                const userSnapshot = snapshot.find(s => s.bookingId === b.bookingId);
+                const userSnapshot = snapshot.find((s) => s.bookingId === b.bookingId);
                 if (userSnapshot) {
                     const personalRoom = `user:${userSnapshot.userId}`;
                     this.queueGateway.server.to(personalRoom).emit('queue:your-turn', {
@@ -50,7 +54,7 @@ let QueueEventsListener = QueueEventsListener_1 = class QueueEventsListener {
                 }
             }
             else if (b.newPosition <= 3) {
-                const userSnapshot = snapshot.find(s => s.bookingId === b.bookingId);
+                const userSnapshot = snapshot.find((s) => s.bookingId === b.bookingId);
                 if (userSnapshot) {
                     await this.notificationsService.sendNotification(userSnapshot.userId, 'QUEUE_NEAR', 'You are almost up!', `You are now at position ${b.newPosition} in the queue.`, b.bookingId);
                 }

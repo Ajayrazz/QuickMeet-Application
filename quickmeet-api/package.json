@@ -38,7 +38,9 @@
     "bullmq": "^5.79.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "dotenv": "^17.4.2",
     "expo-server-sdk": "^6.1.0",
+    "express": "^5.2.1",
     "helmet": "^8.2.0",
     "ioredis": "^5.11.1",
     "nestjs-pino": "^4.6.1",
@@ -58,7 +60,7 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
@@ -94,6 +96,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^expo-server-sdk$": "<rootDir>/../test/mocks/expo-server-sdk.js"
+    }
   }
 }

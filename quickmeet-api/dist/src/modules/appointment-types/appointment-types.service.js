@@ -27,7 +27,9 @@ let AppointmentTypesService = class AppointmentTypesService {
         });
     }
     async update(adminId, id, dto) {
-        const aptType = await this.prisma.appointmentType.findUnique({ where: { id } });
+        const aptType = await this.prisma.appointmentType.findUnique({
+            where: { id },
+        });
         if (!aptType)
             throw new common_1.NotFoundException('Appointment type not found');
         if (aptType.adminId !== adminId)
@@ -68,7 +70,9 @@ let AppointmentTypesService = class AppointmentTypesService {
         };
     }
     async findOne(id) {
-        const aptType = await this.prisma.appointmentType.findUnique({ where: { id } });
+        const aptType = await this.prisma.appointmentType.findUnique({
+            where: { id },
+        });
         if (!aptType)
             throw new common_1.NotFoundException('Appointment type not found');
         return aptType;

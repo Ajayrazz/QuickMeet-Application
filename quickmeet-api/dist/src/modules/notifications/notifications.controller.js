@@ -17,15 +17,16 @@ const common_1 = require("@nestjs/common");
 const notifications_service_1 = require("./notifications.service");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
+const pagination_dto_1 = require("../../common/dto/pagination.dto");
 let NotificationsController = class NotificationsController {
     notificationsService;
     constructor(notificationsService) {
         this.notificationsService = notificationsService;
     }
-    async getMyNotifications(user, page, limit) {
-        const pageNumber = page ? parseInt(page, 10) : 1;
-        const limitNumber = limit ? parseInt(limit, 10) : 20;
-        return this.notificationsService.getMyNotifications(user.id, pageNumber, limitNumber);
+    async getMyNotifications(user, pagination) {
+        const page = pagination?.page || 1;
+        const limit = pagination?.limit || 20;
+        return this.notificationsService.getMyNotifications(user.id, page, limit);
     }
     async markAsRead(user, id) {
         return this.notificationsService.markAsRead(user.id, id);
@@ -35,10 +36,9 @@ exports.NotificationsController = NotificationsController;
 __decorate([
     (0, common_1.Get)('me'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object, pagination_dto_1.PaginationQueryDto]),
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "getMyNotifications", null);
 __decorate([

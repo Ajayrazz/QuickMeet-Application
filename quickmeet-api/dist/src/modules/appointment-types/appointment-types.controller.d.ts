@@ -1,5 +1,6 @@
 import { AppointmentTypesService } from './appointment-types.service';
 import { CreateAppointmentTypeDto, UpdateAppointmentTypeDto } from './dto/appointment-type.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 export declare class AppointmentTypesController {
     private readonly appointmentTypesService;
     constructor(appointmentTypesService: AppointmentTypesService);
@@ -25,7 +26,7 @@ export declare class AppointmentTypesController {
         isActive: boolean;
         adminId: string;
     }>;
-    findAll(search?: string, category?: string, page?: string, limit?: string): Promise<{
+    findAll(search?: string, category?: string, pagination?: PaginationQueryDto): Promise<{
         data: {
             id: string;
             createdAt: Date;

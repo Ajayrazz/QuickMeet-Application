@@ -25,7 +25,9 @@ exports.NotificationsModule = NotificationsModule = __decorate([
                 provide: 'NOTIFICATION_PROVIDER',
                 useFactory: (configService) => {
                     const provider = configService.get('NOTIFICATION_PROVIDER');
-                    return provider === 'expo' ? new expo_push_provider_1.ExpoPushProvider() : new console_provider_1.ConsoleNotificationProvider();
+                    return provider === 'expo'
+                        ? new expo_push_provider_1.ExpoPushProvider()
+                        : new console_provider_1.ConsoleNotificationProvider();
                 },
                 inject: [config_1.ConfigService],
             },

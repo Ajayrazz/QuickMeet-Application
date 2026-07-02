@@ -82,11 +82,10 @@ let SlotsService = class SlotsService {
         });
         return slots.map((slot) => {
             const activeBookingsCount = slot.bookings.length;
-            const remainingCapacity = Math.max(0, slot.capacity - activeBookingsCount);
-            const { bookings, ...slotData } = slot;
+            const { bookings, ...slotDetails } = slot;
             return {
-                ...slotData,
-                remainingCapacity,
+                ...slotDetails,
+                availableCapacity: slot.capacity - activeBookingsCount,
             };
         });
     }

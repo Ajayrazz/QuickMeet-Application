@@ -1,6 +1,7 @@
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/booking.dto';
 import { QueueService } from '../queue/queue.service';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 import { BookingStatus } from '@prisma/client';
 export declare class BookingsController {
     private readonly bookingsService;
@@ -16,7 +17,7 @@ export declare class BookingsController {
     noShow(user: any, id: string): Promise<{
         message: string;
     }>;
-    findMyBookings(user: any, status?: BookingStatus, page?: string, limit?: string): Promise<{
+    findMyBookings(user: any, status?: BookingStatus, pagination?: PaginationQueryDto): Promise<{
         data: ({
             slot: {
                 appointmentType: {

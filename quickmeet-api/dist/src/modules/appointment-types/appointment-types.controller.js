@@ -19,6 +19,7 @@ const appointment_type_dto_1 = require("./dto/appointment-type.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
+const pagination_dto_1 = require("../../common/dto/pagination.dto");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const client_1 = require("@prisma/client");
 let AppointmentTypesController = class AppointmentTypesController {
@@ -32,10 +33,10 @@ let AppointmentTypesController = class AppointmentTypesController {
     async update(user, id, dto) {
         return this.appointmentTypesService.update(user.id, id, dto);
     }
-    async findAll(search, category, page, limit) {
-        const pageNumber = page ? parseInt(page, 10) : 1;
-        const limitNumber = limit ? parseInt(limit, 10) : 10;
-        return this.appointmentTypesService.findAll(search, category, pageNumber, limitNumber);
+    async findAll(search, category, pagination) {
+        const page = pagination?.page || 1;
+        const limit = pagination?.limit || 10;
+        return this.appointmentTypesService.findAll(search, category, page, limit);
     }
     async findOne(id) {
         return this.appointmentTypesService.findOne(id);
@@ -67,10 +68,9 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('search')),
     __param(1, (0, common_1.Query)('category')),
-    __param(2, (0, common_1.Query)('page')),
-    __param(3, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, pagination_dto_1.PaginationQueryDto]),
     __metadata("design:returntype", Promise)
 ], AppointmentTypesController.prototype, "findAll", null);
 __decorate([

@@ -18,13 +18,15 @@ let ExpoPushProvider = ExpoPushProvider_1 = class ExpoPushProvider {
             this.logger.warn(`Invalid Expo push token: ${pushToken}`);
             return;
         }
-        const messages = [{
+        const messages = [
+            {
                 to: pushToken,
                 sound: 'default',
                 title,
                 body,
                 data: data || {},
-            }];
+            },
+        ];
         try {
             const ticketChunks = await this.expo.sendPushNotificationsAsync(messages);
             this.logger.log(`Sent Expo push to ${pushToken}: ${JSON.stringify(ticketChunks)}`);

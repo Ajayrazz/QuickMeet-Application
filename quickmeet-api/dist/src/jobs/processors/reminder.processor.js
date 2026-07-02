@@ -25,13 +25,14 @@ let ReminderProcessor = ReminderProcessor_1 = class ReminderProcessor extends bu
         this.prisma = prisma;
     }
     async process(job) {
-        const { bookingId, slotId, userId } = job.data;
+        const { bookingId, userId } = job.data;
         this.logger.log(`Processing reminder job ${job.id} for booking ${bookingId}`);
         const booking = await this.prisma.booking.findUnique({
             where: { id: bookingId },
             include: { slot: { include: { appointmentType: true } } },
         });
-        if (!booking || booking.status !== 'CONFIRMED' && booking.status !== 'IN_QUEUE') {
+        if (!booking ||
+            (booking.status !== 'CONFIRMED' && booking.status !== 'IN_QUEUE')) {
             this.logger.warn(`Skipping reminder for booking ${bookingId}: status changed or not found`);
             return;
         }

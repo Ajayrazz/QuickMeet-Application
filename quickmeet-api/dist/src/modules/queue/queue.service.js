@@ -54,7 +54,9 @@ let QueueService = QueueService_1 = class QueueService {
             bookingId: b.id,
             userId: b.userId,
             position: b.queuePosition,
-            etaMinutes: b.queuePosition ? (0, eta_util_1.calculateETA)(b.queuePosition, avgDuration) : 0,
+            etaMinutes: b.queuePosition
+                ? (0, eta_util_1.calculateETA)(b.queuePosition, avgDuration)
+                : 0,
         }));
         const cacheKey = `queue:${slotId}`;
         await this.redisService.setJSON(cacheKey, snapshot, 300);
