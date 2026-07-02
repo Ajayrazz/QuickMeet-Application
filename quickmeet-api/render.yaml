@@ -2,7 +2,7 @@ services:
   - type: web
     name: quickmeet-api
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build && npx prisma migrate deploy
     startCommand: npm run start:prod
     healthCheckPath: /health
     envVars:

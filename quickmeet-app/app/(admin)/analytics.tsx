@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
+// Force Metro to bundle the linear-gradient package so gifted-charts can find it dynamically
+import 'expo-linear-gradient';
 import { format, subDays } from 'date-fns';
 import { useAnalytics } from '../../src/api/analytics.api';
 import { Card } from '../../src/components/ui/Card';
+import { Skeleton, EmptyState } from '../../src/components/ui/Misc';
 
 export default function AnalyticsScreen() {
   // By default, let's fetch the last 7 days
@@ -17,8 +20,18 @@ export default function AnalyticsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark p-6 pt-12">
+        <Skeleton className="w-1/3 h-8 mb-2" />
+        <Skeleton className="w-1/2 h-4 mb-8" />
+        
+        <View className="flex-row justify-between mb-4">
+          <Card className="flex-1 h-24 mr-2 p-4"><Skeleton className="w-full h-full" /></Card>
+          <Card className="flex-1 h-24 mx-2 p-4"><Skeleton className="w-full h-full" /></Card>
+          <Card className="flex-1 h-24 ml-2 p-4"><Skeleton className="w-full h-full" /></Card>
+        </View>
+        
+        <Card className="h-16 mb-8 p-4"><Skeleton className="w-full h-full" /></Card>
+        <Card className="h-64 p-4"><Skeleton className="w-full h-full" /></Card>
       </View>
     );
   }
@@ -94,7 +107,11 @@ export default function AnalyticsScreen() {
               initialSpacing={10}
             />
           ) : (
-            <Text className="text-text-muted dark:text-text-muted-dark py-12">No data available</Text>
+            <EmptyState 
+              title="No chart data" 
+              description="There is no booking data available for the selected period."
+              className="py-8"
+            />
           )}
         </Card>
       </ScrollView>

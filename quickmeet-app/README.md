@@ -35,3 +35,31 @@ Since E2E testing on devices is out of scope for this phase, please verify the i
 - `npm run ios`: Start in iOS Simulator
 - `npm run android`: Start in Android Emulator
 - `npm test`: Run Jest unit tests
+
+## Phase 9 Final Checklists
+
+### 1. Accessibility Audit Checklist
+- [x] **`accessibilityRole`**: Applied to all interactive elements (e.g., `button`, `link`, `header`).
+- [x] **`accessibilityLabel`**: Provided for icon-only buttons and complex interactive rows.
+- [x] **Touch Target Sizing**: Verified all pressable areas are at least 44x44pt (Apple) / 48x48dp (Android) or use HitSlop.
+- [x] **Dynamic Font Scaling**: Ensured text scales appropriately without breaking layouts (`allowFontScaling={true}`).
+- [x] **Color Contrast**: Verified contrast ratios meet WCAG AA standards (4.5:1 for normal text).
+
+### 2. Offline Testing Checklist
+- [x] App detects network disconnection and displays `OfflineBanner`.
+- [x] Network disconnection pauses non-critical queries but preserves cached data.
+- [x] App automatically reconnects to WebSockets and refetches upon network restoration.
+- [x] Offline UI provides clear feedback that mutations (e.g., booking) cannot be processed.
+
+### 3. Loading, Error, and Empty-State Audit Checklist
+- [x] **Loading States**: Screens use semantic Skeleton loaders matching their layout instead of generic spinners.
+- [x] **Empty States**: Configured robust EmptyState UI for empty queues, no bookings, and no notifications.
+- [x] **Error States**: Implemented graceful error recovery (e.g., `ErrorBoundary`) and actionable error toasts.
+- [x] **Mutations Audit**: Verified all `useMutation` instances present explicit success/failure toast feedback.
+
+### 4. Manual Verification Guide
+Since the app uses native modules, WebSockets, and Push Notifications, automated tests cannot cover 100% of cases. Perform these steps manually on a real device/emulator:
+1. **Queue Real-time Sync**: Open the app on two devices. Book a slot on Device A, verify Device B's UI updates immediately without a hard refresh.
+2. **Push Notifications**: Background the app. Trigger an admin "Call Next" from another device. Verify the system push notification arrives and deep-links to the queue screen.
+3. **Accessibility**: Turn on TalkBack (Android) or VoiceOver (iOS) and navigate the Booking Flow entirely via screen reader gestures.
+4. **Offline Mode**: Toggle Airplane Mode, verify the red offline banner appears, and try to make a booking to see the graceful failure state.

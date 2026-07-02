@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Calendar, Clock, MapPin } from 'lucide-react-native';
+import { Clock, MapPin } from 'lucide-react-native';
 import { format, parseISO } from 'date-fns';
 import { Link } from 'expo-router';
 import { Booking } from '../../api/bookings.api';

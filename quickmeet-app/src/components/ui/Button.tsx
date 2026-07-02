@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View, Animated } from "react-native";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/cn";
 
@@ -59,16 +59,39 @@ export interface ButtonProps
 
 export const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
   (
-    { className, variant, size, label, loading, disabled, leftIcon, rightIcon, children, ...props },
+    { className, variant, size, label, loading, disabled, leftIcon, rightIcon, children, onPressIn, onPressOut, ...props },
     ref
   ) => {
+    const [scale] = React.useState(() => new Animated.Value(1));
+
+    const handlePressIn = (e: any) => {
+      Animated.spring(scale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+      if (onPressIn) onPressIn(e);
+    };
+
+    const handlePressOut = (e: any) => {
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+      if (onPressOut) onPressOut(e);
+    };
+
     return (
-      <Pressable
-        ref={ref}
-        disabled={disabled || loading}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...props}
-      >
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Pressable
+          ref={ref}
+          disabled={disabled || loading}
+          className={cn(buttonVariants({ variant, size, className }))}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: disabled || loading, busy: loading }}
+          {...props}
+        >
         {loading ? (
           <ActivityIndicator color={variant === "secondary" ? "#64748b" : "#ffffff"} />
         ) : (
@@ -82,7 +105,8 @@ export const Button = React.forwardRef<React.ElementRef<typeof Pressable>, Butto
             {rightIcon && <View className="ml-2">{rightIcon}</View>}
           </>
         )}
-      </Pressable>
+        </Pressable>
+      </Animated.View>
     );
   }
 );

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { View } from "react-native";
+import { View, type ViewProps } from "react-native";
 import { cn } from "../../lib/cn";
 
-export interface CardProps extends React.ComponentPropsWithoutRef<typeof View> {}
+export type CardProps = ViewProps;
 
 export const Card = React.forwardRef<React.ElementRef<typeof View>, CardProps>(
   ({ className, children, ...props }, ref) => {

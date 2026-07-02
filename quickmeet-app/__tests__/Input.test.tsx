@@ -3,19 +3,19 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { Input } from '../src/components/ui/Input';
 
 describe('Input', () => {
-  it('renders label correctly', () => {
-    const { getByText } = render(<Input label="Email Address" />);
+  it('renders label correctly', async () => {
+    const { getByText } = await render(<Input label="Email Address" />);
     expect(getByText('Email Address')).toBeTruthy();
   });
 
-  it('displays error message', () => {
-    const { getByText } = render(<Input label="Email" error="Invalid email" />);
+  it('displays error message', async () => {
+    const { getByText } = await render(<Input label="Email" error="Invalid email" />);
     expect(getByText('Invalid email')).toBeTruthy();
   });
 
-  it('allows typing and updates value', () => {
+  it('allows typing and updates value', async () => {
     const onChangeTextMock = jest.fn();
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = await render(
       <Input placeholder="Type here..." onChangeText={onChangeTextMock} />
     );
     

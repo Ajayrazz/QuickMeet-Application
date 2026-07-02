@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Calendar, Bell } from 'lucide-react-native';
+import { Home, Calendar, Bell, User } from 'lucide-react-native';
 import { View, Text } from 'react-native';
 import { usePushRegistration } from '../../src/hooks/usePushRegistration';
 import { useMyNotifications } from '../../src/hooks/useMyNotifications';
@@ -48,6 +48,13 @@ export default function TabsLayout() {
               )}
             </View>
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </Tabs>

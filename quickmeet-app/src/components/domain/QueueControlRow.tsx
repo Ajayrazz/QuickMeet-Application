@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import { Check, X } from 'lucide-react-native';
@@ -36,6 +36,7 @@ export function QueueControlRow({ item, isNext, onCallNext, onNoShow, isProcessi
 
         <View className="flex-row">
           <TouchableOpacity
+            testID="no-show-button"
             onPress={() => onNoShow(item.bookingId!)}
             disabled={isProcessing}
             className="w-10 h-10 rounded-full bg-red-500/20 items-center justify-center mr-2"
@@ -45,6 +46,7 @@ export function QueueControlRow({ item, isNext, onCallNext, onNoShow, isProcessi
           
           {isNext && (
             <TouchableOpacity
+              testID="call-next-button"
               onPress={() => onCallNext(item.bookingId!)}
               disabled={isProcessing}
               className="px-4 py-2 bg-green-500 rounded-full items-center justify-center flex-row"

@@ -5,7 +5,8 @@ import { useQueueSnapshot } from '../../../src/hooks/useBookings';
 import { useQueueSocket } from '../../../src/hooks/useQueueSocket';
 import { useAdminQueueActions } from '../../../src/hooks/useAdminQueueActions';
 import { QueueControlRow } from '../../../src/components/domain/QueueControlRow';
-import { EmptyState } from '../../../src/components/ui/Misc';
+import { EmptyState, Skeleton } from '../../../src/components/ui/Misc';
+import { Card } from '../../../src/components/ui/Card';
 
 export default function AdminQueueControlScreen() {
   const { slotId } = useLocalSearchParams<{ slotId: string }>();
@@ -26,8 +27,16 @@ export default function AdminQueueControlScreen() {
 
   if (isQueueLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark p-6 pt-12">
+        <Skeleton className="w-1/2 h-8 mb-6" />
+        <Card className="h-20 mb-4 p-4 flex-row items-center">
+          <Skeleton className="w-10 h-10 rounded-full mr-4" />
+          <View className="flex-1"><Skeleton className="w-2/3 h-5 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+        </Card>
+        <Card className="h-20 mb-4 p-4 flex-row items-center">
+          <Skeleton className="w-10 h-10 rounded-full mr-4" />
+          <View className="flex-1"><Skeleton className="w-2/3 h-5 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+        </Card>
       </View>
     );
   }

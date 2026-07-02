@@ -103,5 +103,8 @@
     "moduleNameMapper": {
       "^expo-server-sdk$": "<rootDir>/../test/mocks/expo-server-sdk.js"
     }
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

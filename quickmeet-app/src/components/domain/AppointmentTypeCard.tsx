@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { Clock, MapPin } from 'lucide-react-native';
 import { AppointmentType } from '../../api/appointmentTypes.api';
 import { Badge } from '../ui/Misc';
@@ -7,11 +7,35 @@ import { Card } from '../ui/Card';
 import { Link } from 'expo-router';
 
 export const AppointmentTypeCard = ({ type }: { type: AppointmentType }) => {
+  const [scale] = React.useState(() => new Animated.Value(1));
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.98,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
   return (
     <Link href={`/appointment/${type.id}`} asChild>
-      <Pressable className="mb-4">
-        <Card className="p-4 active:bg-gray-50 dark:active:bg-slate-800">
-          <View className="flex-row justify-between items-start mb-2">
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Pressable 
+          className="mb-4"
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          accessibilityRole="button"
+          accessibilityLabel={`Book ${type.title}`}
+          accessibilityHint="Tap to book this service"
+        >
+          <Card className="p-4 bg-surface dark:bg-surface-dark border border-border dark:border-border-dark">
+            <View className="flex-row justify-between items-start mb-2">
             <Text className="text-lg font-bold text-text dark:text-text-dark flex-1 mr-4">
               {type.title}
             </Text>
@@ -41,8 +65,9 @@ export const AppointmentTypeCard = ({ type }: { type: AppointmentType }) => {
               </View>
             )}
           </View>
-        </Card>
-      </Pressable>
+          </Card>
+        </Pressable>
+      </Animated.View>
     </Link>
   );
 };

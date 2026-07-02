@@ -12,8 +12,8 @@ export interface NotificationDto {
 }
 
 export const getMyNotifications = async (): Promise<NotificationDto[]> => {
-  const { data } = await api.get<NotificationDto[]>('/notifications/me');
-  return data;
+  const { data } = await api.get<{ data: NotificationDto[] }>('/notifications/me');
+  return data.data; // Backend returns a paginated { data, meta } object
 };
 
 export const markNotificationAsRead = async (id: string): Promise<void> => {

@@ -9,6 +9,7 @@ import { useAppointmentType } from '../../../../src/hooks/useAppointmentTypes';
 import { Input } from '../../../../src/components/ui/Input';
 import { Button } from '../../../../src/components/ui/Button';
 import { Card } from '../../../../src/components/ui/Card';
+import { Skeleton } from '../../../../src/components/ui/Misc';
 
 const schema = z.object({
   title: z.string().min(3, 'Title is required'),
@@ -72,8 +73,17 @@ export default function AppointmentTypeEditScreen() {
 
   if (isEditing && isLoadingInitial) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark p-6">
+        <Skeleton className="w-1/2 h-8 mb-6 mt-4" />
+        <Card className="p-4">
+          <Skeleton className="w-1/4 h-4 mb-2" />
+          <Skeleton className="w-full h-12 mb-4 rounded-xl" />
+          <Skeleton className="w-1/4 h-4 mb-2" />
+          <Skeleton className="w-full h-24 mb-4 rounded-xl" />
+          <Skeleton className="w-1/4 h-4 mb-2" />
+          <Skeleton className="w-full h-12 mb-6 rounded-xl" />
+          <Skeleton className="w-full h-12 rounded-xl" />
+        </Card>
       </View>
     );
   }

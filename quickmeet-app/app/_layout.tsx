@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Slot, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '../src/stores/auth.store';
 import { useUIStore } from '../src/stores/ui.store';
 import { ToastProvider } from '../src/components/ui/Toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { View } from 'react-native';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { OfflineBanner } from '../src/components/OfflineBanner';
 
 import '../src/global.css';
 
@@ -15,8 +17,11 @@ export default function RootLayout() {
   const { hasSeenOnboarding, colorScheme } = useUIStore();
   const segments = useSegments();
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    if (!rootNavigationState?.key) return; // Wait for the root navigation to mount
+
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboardingGroup = segments[0] === '(onboarding)';
     const inAdminGroup = (segments[0] as string) === '(admin)';
@@ -46,14 +51,17 @@ export default function RootLayout() {
         router.replace('/(admin)/dashboard' as any);
       }
     }
-  }, [isAuthenticated, hasSeenOnboarding, segments, user]);
+  }, [isAuthenticated, hasSeenOnboarding, segments, user, rootNavigationState?.key]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <View className={`flex-1 bg-background dark:bg-background-dark ${colorScheme === 'dark' ? 'dark' : ''}`}>
-        <Slot />
-        <ToastProvider />
-      </View>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <View className={`flex-1 bg-background dark:bg-background-dark ${colorScheme === 'dark' ? 'dark' : ''}`}>
+          <OfflineBanner />
+          <Slot />
+          <ToastProvider />
+        </View>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

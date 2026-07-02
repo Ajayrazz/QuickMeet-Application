@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { format, parseISO } from 'date-fns';
 import { Booking } from '../../api/bookings.api';

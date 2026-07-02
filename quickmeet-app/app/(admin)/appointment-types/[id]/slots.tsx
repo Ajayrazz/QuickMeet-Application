@@ -8,7 +8,7 @@ import { useCreateSlot, useUpdateSlot } from '../../../../src/hooks/useAdminSlot
 import { DateStrip } from '../../../../src/components/domain/DateStrip';
 import { SlotEditorForm, SlotFormData } from '../../../../src/components/domain/SlotEditorForm';
 import { Card } from '../../../../src/components/ui/Card';
-import { EmptyState, Badge } from '../../../../src/components/ui/Misc';
+import { EmptyState, Badge, Skeleton } from '../../../../src/components/ui/Misc';
 
 export default function AdminSlotsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -61,7 +61,16 @@ export default function AdminSlotsScreen() {
 
       <ScrollView contentContainerClassName="p-6 pb-32 mt-2">
         {isSlotsLoading ? (
-          <ActivityIndicator size="large" color="#6366f1" />
+          <View>
+            <Card className="p-4 mb-4 h-24 flex-row justify-between items-center">
+              <View className="flex-1"><Skeleton className="w-1/2 h-6 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+              <Skeleton className="w-12 h-6 rounded-full ml-4" />
+            </Card>
+            <Card className="p-4 mb-4 h-24 flex-row justify-between items-center">
+              <View className="flex-1"><Skeleton className="w-1/2 h-6 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+              <Skeleton className="w-12 h-6 rounded-full ml-4" />
+            </Card>
+          </View>
         ) : slots && slots.length > 0 ? (
           slots.map((slot) => (
             <Card key={slot.id} className="p-4 mb-4 flex-row justify-between items-center">

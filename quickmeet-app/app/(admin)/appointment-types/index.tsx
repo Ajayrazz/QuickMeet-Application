@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Plus, ChevronRight, Clock, MapPin } from 'lucide-react-native';
 import { useMyAppointmentTypes } from '../../../src/hooks/useMyAppointmentTypes';
 import { Card } from '../../../src/components/ui/Card';
-import { EmptyState } from '../../../src/components/ui/Misc';
+import { EmptyState, Skeleton } from '../../../src/components/ui/Misc';
 import { Button } from '../../../src/components/ui/Button';
 
 export default function AppointmentTypesListScreen() {
@@ -26,8 +26,10 @@ export default function AppointmentTypesListScreen() {
       </View>
 
       {isLoading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#6366f1" />
+        <View className="p-6">
+          <Card className="h-32 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-3" /><Skeleton className="w-full h-4 mb-1" /><Skeleton className="w-3/4 h-4 mb-4" /><Skeleton className="w-1/4 h-3" /></Card>
+          <Card className="h-32 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-3" /><Skeleton className="w-full h-4 mb-1" /><Skeleton className="w-3/4 h-4 mb-4" /><Skeleton className="w-1/4 h-3" /></Card>
+          <Card className="h-32 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-3" /><Skeleton className="w-full h-4 mb-1" /><Skeleton className="w-3/4 h-4 mb-4" /><Skeleton className="w-1/4 h-3" /></Card>
         </View>
       ) : (
         <FlatList

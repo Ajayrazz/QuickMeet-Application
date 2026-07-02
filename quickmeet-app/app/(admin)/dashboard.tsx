@@ -9,7 +9,7 @@ import { useAnalytics } from '../../src/api/analytics.api';
 import { useMyAppointmentTypes } from '../../src/hooks/useMyAppointmentTypes';
 import { fetchSlots, Slot } from '../../src/api/slots.api';
 import { Card } from '../../src/components/ui/Card';
-import { EmptyState, Badge } from '../../src/components/ui/Misc';
+import { EmptyState, Badge, Skeleton } from '../../src/components/ui/Misc';
 
 export default function AdminDashboard() {
   const { user } = useAuthStore();
@@ -65,7 +65,10 @@ export default function AdminDashboard() {
         </Text>
 
         {isLoading ? (
-          <ActivityIndicator size="large" color="#6366f1" className="mt-8" />
+          <View className="mt-4">
+            <Card className="h-24 mb-4 p-4"><Skeleton className="w-1/3 h-6 mb-2" /><Skeleton className="w-1/4 h-4" /></Card>
+            <Card className="h-24 mb-4 p-4"><Skeleton className="w-1/3 h-6 mb-2" /><Skeleton className="w-1/4 h-4" /></Card>
+          </View>
         ) : todaySlots.length === 0 ? (
           <EmptyState
             title="No slots today"

@@ -3,7 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react
 import { useRouter } from 'expo-router';
 import { Bell } from 'lucide-react-native';
 import { useMyNotifications, useMarkNotificationRead } from '../../src/hooks/useMyNotifications';
-import { EmptyState } from '../../src/components/ui/Misc';
+import { EmptyState, Skeleton } from '../../src/components/ui/Misc';
 import { Card } from '../../src/components/ui/Card';
 
 export default function NotificationsScreen() {
@@ -22,8 +22,10 @@ export default function NotificationsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark p-6">
+        <Card className="h-24 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-2" /><Skeleton className="w-full h-4" /></Card>
+        <Card className="h-24 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-2" /><Skeleton className="w-full h-4" /></Card>
+        <Card className="h-24 mb-4 p-4"><Skeleton className="w-1/2 h-6 mb-2" /><Skeleton className="w-full h-4" /></Card>
       </View>
     );
   }

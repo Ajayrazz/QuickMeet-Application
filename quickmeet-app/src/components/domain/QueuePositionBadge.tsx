@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, Animated } from 'react-native';
 import { Clock, Users } from 'lucide-react-native';
 import { Card } from '../ui/Card';
 
@@ -10,6 +10,21 @@ interface QueuePositionBadgeProps {
 }
 
 export const QueuePositionBadge = ({ position, eta, isLoading }: QueuePositionBadgeProps) => {
+  const [pulseAnim] = useState(() => new Animated.Value(1));
+
+  useEffect(() => {
+    if (position === 1) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.05, duration: 800, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [position, pulseAnim]);
+
   if (isLoading) {
     return (
       <Card className="p-4 flex-row justify-center items-center h-24">
@@ -30,8 +45,9 @@ export const QueuePositionBadge = ({ position, eta, isLoading }: QueuePositionBa
   }
 
   return (
-    <Card className="p-4 flex-row items-center justify-around bg-primary/5 dark:bg-primary-dark/10">
-      <View className="items-center">
+    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+      <Card className={`p-4 flex-row items-center justify-around ${position === 1 ? 'bg-green-500/10 dark:bg-green-500/20 border border-green-500' : 'bg-primary/5 dark:bg-primary-dark/10'}`}>
+        <View className="items-center">
         <View className="flex-row items-center mb-1">
           <Users size={16} className="text-primary dark:text-primary-light mr-1" />
           <Text className="text-sm font-semibold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">
@@ -57,5 +73,6 @@ export const QueuePositionBadge = ({ position, eta, isLoading }: QueuePositionBa
         </Text>
       </View>
     </Card>
+    </Animated.View>
   );
 };

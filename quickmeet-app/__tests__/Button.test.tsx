@@ -3,23 +3,23 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { Button } from '../src/components/ui/Button';
 
 describe('Button', () => {
-  it('renders label correctly', () => {
-    const { getByText } = render(<Button label="Test Button" />);
+  it('renders label correctly', async () => {
+    const { getByText } = await render(<Button label="Test Button" />);
     expect(getByText('Test Button')).toBeTruthy();
   });
 
-  it('calls onPress when pressed', () => {
+  it('calls onPress when pressed', async () => {
     const onPressMock = jest.fn();
-    const { getByText } = render(<Button label="Press Me" onPress={onPressMock} />);
+    const { getByText } = await render(<Button label="Press Me" onPress={onPressMock} />);
     
     fireEvent.press(getByText('Press Me'));
     expect(onPressMock).toHaveBeenCalledTimes(1);
   });
 
-  it('is disabled when loading is true', () => {
+  it('is disabled when loading is true', async () => {
     const onPressMock = jest.fn();
     // Use testID to target the Pressable since text is hidden when loading
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <Button label="Load" loading={true} onPress={onPressMock} testID="btn" />
     );
     

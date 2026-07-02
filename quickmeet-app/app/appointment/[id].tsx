@@ -10,7 +10,7 @@ import { DateStrip } from '../../src/components/domain/DateStrip';
 import { SlotCard } from '../../src/components/domain/SlotCard';
 import { Slot } from '../../src/api/slots.api';
 import { Button } from '../../src/components/ui/Button';
-import { EmptyState, Badge } from '../../src/components/ui/Misc';
+import { EmptyState, Badge, Skeleton } from '../../src/components/ui/Misc';
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -29,8 +29,20 @@ export default function AppointmentDetailScreen() {
 
   if (isTypeLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark">
+        <View className="p-6 bg-primary/10 dark:bg-primary-dark/20 rounded-b-3xl mb-4 pt-12">
+          <Skeleton className="w-20 h-6 rounded-full mb-4" />
+          <Skeleton className="w-2/3 h-10 mb-2" />
+          <Skeleton className="w-full h-4 mb-1" />
+          <Skeleton className="w-3/4 h-4" />
+        </View>
+        <View className="p-6">
+          <Skeleton className="w-1/3 h-6 mb-4" />
+          <Skeleton className="w-full h-16 mb-8" />
+          <Skeleton className="w-1/3 h-6 mb-4" />
+          <Skeleton className="w-full h-20 mb-4" />
+          <Skeleton className="w-full h-20" />
+        </View>
       </View>
     );
   }
@@ -103,7 +115,11 @@ export default function AppointmentDetailScreen() {
           </Text>
           
           {isSlotsLoading ? (
-            <ActivityIndicator size="small" color="#6366f1" />
+            <View>
+              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
+              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
+              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
+            </View>
           ) : slots && slots.length > 0 ? (
             slots.map((slot) => (
               <SlotCard
@@ -114,9 +130,11 @@ export default function AppointmentDetailScreen() {
               />
             ))
           ) : (
-            <Text className="text-center text-text-muted dark:text-text-muted-dark py-8">
-              No slots available for this date.
-            </Text>
+            <EmptyState 
+              title="No slots available" 
+              description="There are no slots available for this date."
+              className="py-8"
+            />
           )}
         </View>
       </ScrollView>

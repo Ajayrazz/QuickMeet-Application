@@ -8,6 +8,7 @@ export function useAdminQueueActions() {
   const serveMutation = useMutation({
     mutationFn: (bookingId: string) => serveBooking(bookingId),
     onSuccess: () => {
+      showToast({ message: 'User called successfully', type: 'success' });
       // Intentionally NOT invalidating queries. The socket queue:update is the single source of truth.
     },
     onError: (err: any) => {
@@ -18,6 +19,7 @@ export function useAdminQueueActions() {
   const noShowMutation = useMutation({
     mutationFn: (bookingId: string) => noShowBooking(bookingId),
     onSuccess: () => {
+      showToast({ message: 'User marked as no-show', type: 'info' });
       // Again, rely on socket for state sync
     },
     onError: (err: any) => {

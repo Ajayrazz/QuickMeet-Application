@@ -5,7 +5,7 @@ import { useBooking, useQueueSnapshot, useCancelBooking } from '../../src/hooks/
 import { useAuthStore } from '../../src/stores/auth.store';
 import { QRTicket } from '../../src/components/domain/QRTicket';
 import { QueuePositionBadge } from '../../src/components/domain/QueuePositionBadge';
-import { EmptyState } from '../../src/components/ui/Misc';
+import { EmptyState, Skeleton } from '../../src/components/ui/Misc';
 import { useQueueSocket } from '../../src/hooks/useQueueSocket';
 import { Text } from 'react-native';
 import { Button } from '../../src/components/ui/Button';
@@ -27,8 +27,9 @@ export default function BookingDetailScreen() {
 
   if (isBookingLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark justify-center items-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+      <View className="flex-1 bg-background dark:bg-background-dark p-6 pt-12">
+        <Skeleton className="w-full h-[400px] rounded-3xl mb-6" />
+        <Skeleton className="w-full h-24 rounded-2xl" />
       </View>
     );
   }

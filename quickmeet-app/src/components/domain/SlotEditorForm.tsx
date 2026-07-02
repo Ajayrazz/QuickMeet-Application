@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, Modal, Switch } from 'react-native';
+import { View, Text, Modal } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
 
 const schema = z.object({
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Must be HH:MM format'),
