@@ -20,7 +20,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
-      {/* Additional tabs will go here in future phases */}
+      <Tabs.Screen
+        name="bookings"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
