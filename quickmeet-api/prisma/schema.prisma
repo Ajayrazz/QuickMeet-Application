@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum SlotStatus {
+  OPEN
+  CLOSED
+  COMPLETED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_QUEUE
+  SERVED
+  NO_SHOW
+  CANCELLED
+}
+
+model User {
+  id               String              @id @default(uuid())
+  email            String              @unique
+  passwordHash     String
+  name             String
+  role             Role                @default(USER)
+  isVerified       Boolean             @default(false)
+  pushToken        String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  
+  refreshTokens    RefreshToken[]
+  verificatonTokens VerificationToken[]
+  appointmentTypes AppointmentType[]
+  bookings         Booking[]
+  notifications    Notification[]
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  deviceInfo String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+}
+
+model VerificationToken {
+  id         String                @id @default(uuid())
+  userId     String
+  user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String
+  type       VerificationTokenType
+  expiresAt  DateTime
+}
+
+model AppointmentType {
+  id                        String   @id @default(uuid())
+  adminId                   String
+  admin                     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  title                     String
+  description               String?
+  category                  String?
+  location                  String?
+  avgServiceDurationMinutes Int      @default(15)
+  isActive                  Boolean  @default(true)
+  createdAt                 DateTime @default(now())
+  
+  slots                     Slot[]
+}
+
+model Slot {
+  id                String          @id @default(uuid())
+  appointmentTypeId String
+  appointmentType   AppointmentType @relation(fields: [appointmentTypeId], references: [id], onDelete: Cascade)
+  startTime         DateTime
+  endTime           DateTime
+  capacity          Int             @default(1)
+  status            SlotStatus      @default(OPEN)
+  createdAt         DateTime        @default(now())
+  
+  bookings          Booking[]
+
+  @@index([appointmentTypeId, startTime])
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slotId        String
+  slot          Slot          @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  status        BookingStatus @default(PENDING)
+  queuePosition Int?
+  qrCode        String?
+  bookedAt      DateTime      @default(now())
+  servedAt      DateTime?
+  cancelledAt   DateTime?
+  
+  notifications Notification[]
+
+  @@index([slotId, status])
+}
+
+model Notification {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type             String
+  title            String
+  body             String
+  isRead           Boolean  @default(false)
+  relatedBookingId String?
+  relatedBooking   Booking? @relation(fields: [relatedBookingId], references: [id], onDelete: SetNull)
+  createdAt        DateTime @default(now())
+}
