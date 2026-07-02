@@ -13,7 +13,9 @@ import { ConsoleNotificationProvider } from './providers/console.provider';
       provide: 'NOTIFICATION_PROVIDER',
       useFactory: (configService: ConfigService) => {
         const provider = configService.get('NOTIFICATION_PROVIDER');
-        return provider === 'expo' ? new ExpoPushProvider() : new ConsoleNotificationProvider();
+        return provider === 'expo'
+          ? new ExpoPushProvider()
+          : new ConsoleNotificationProvider();
       },
       inject: [ConfigService],
     },

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: quickmeet-api
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*" # Update this to your frontend domains in Render dashboard
+      - key: NOTIFICATION_PROVIDER
+        value: expo

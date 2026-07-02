@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { SlotsService } from './slots.service';
 import { CreateSlotDto, UpdateSlotDto } from './dto/slot.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -34,6 +43,9 @@ export class SlotsController {
     @Param('id') appointmentTypeId: string,
     @Query('date') date: string,
   ) {
-    return this.slotsService.findByAppointmentTypeAndDate(appointmentTypeId, date);
+    return this.slotsService.findByAppointmentTypeAndDate(
+      appointmentTypeId,
+      date,
+    );
   }
 }

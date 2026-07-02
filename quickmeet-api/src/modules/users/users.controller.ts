@@ -1,4 +1,10 @@
-import { Controller, Post, Body, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -15,7 +21,10 @@ export class UsersController {
 
   @Post('me/push-token')
   @UseGuards(JwtAuthGuard)
-  async updatePushToken(@CurrentUser() user: any, @Body() dto: UpdatePushTokenDto) {
+  async updatePushToken(
+    @CurrentUser() user: any,
+    @Body() dto: UpdatePushTokenDto,
+  ) {
     if (!dto.pushToken) {
       throw new BadRequestException('Push token is required');
     }

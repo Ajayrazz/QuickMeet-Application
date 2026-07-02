@@ -1,7 +1,15 @@
-import { Controller, Get, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
@@ -11,12 +19,11 @@ export class NotificationsController {
   @Get('me')
   async getMyNotifications(
     @CurrentUser() user: any,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() pagination?: PaginationQueryDto,
   ) {
-    const pageNumber = page ? parseInt(page, 10) : 1;
-    const limitNumber = limit ? parseInt(limit, 10) : 20;
-    return this.notificationsService.getMyNotifications(user.id, pageNumber, limitNumber);
+    const page = pagination?.page || 1;
+    const limit = pagination?.limit || 20;
+    return this.notificationsService.getMyNotifications(user.id, page, limit);
   }
 
   @Patch(':id/read')

@@ -1,8 +1,8 @@
-import { 
-  WebSocketGateway, 
-  SubscribeMessage, 
-  MessageBody, 
-  ConnectedSocket, 
+import {
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -25,7 +25,7 @@ export class QueueGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private queueService: QueueService,
     private prisma: PrismaService,
-    private wsAuthGuard: WsAuthGuard // Inject to use manually in connection
+    private wsAuthGuard: WsAuthGuard, // Inject to use manually in connection
   ) {}
 
   async handleConnection(client: Socket) {
@@ -33,14 +33,14 @@ export class QueueGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // We manually invoke the logic of the guard to disconnect immediately on fail
       const token = client.handshake.auth?.token;
       if (!token) throw new Error('No token');
-      
+
       // Simulate context for guard (a bit hacky but works for connect)
       // Alternatively, we use an io middleware. Let's just do a quick check here.
       // But using an adapter middleware is better.
       // For now, if we use the Guard on methods, that protects actions.
       // We want to attach user to the personal room on connect.
-    } catch (e) {
-      this.logger.warn('Client connection rejected');
+    } catch (e: any) {
+      this.logger.warn(`Client connection rejected: ${e.message}`);
       client.disconnect();
     }
   }
@@ -56,7 +56,7 @@ export class QueueGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody('slotId') slotId: string,
   ) {
     const user = (client as any).user;
-    
+
     // Verify user owns an active booking in this slot OR is the admin
     const slot = await this.prisma.slot.findUnique({
       where: { id: slotId },
@@ -89,7 +89,7 @@ export class QueueGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const roomName = `slot:${slotId}`;
     await client.join(roomName);
-    
+
     // Also join personal room for specific notifications
     const personalRoom = `user:${user.id}`;
     await client.join(personalRoom);

@@ -4,7 +4,10 @@
  * @param avgServiceDurationMinutes The average time to serve one user
  * @returns The estimated wait time in minutes
  */
-export const calculateETA = (position: number, avgServiceDurationMinutes: number): number => {
+export const calculateETA = (
+  position: number,
+  avgServiceDurationMinutes: number,
+): number => {
   if (position <= 1) {
     return 0; // If you are first or not in queue, wait time is roughly 0 (it's your turn)
   }

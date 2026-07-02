@@ -3,7 +3,11 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
-import { BookingEvents, BookingCreatedEvent, QueueCompactedEvent } from '../modules/bookings/booking.events';
+import {
+  BookingEvents,
+  BookingCreatedEvent,
+  QueueCompactedEvent,
+} from '../modules/bookings/booking.events';
 
 @Injectable()
 export class JobsEventsListener {
@@ -36,15 +40,17 @@ export class JobsEventsListener {
           slotId: event.slotId,
           userId: event.userId,
         },
-        { delay }
+        { delay },
       );
 
       await this.prisma.booking.update({
         where: { id: event.bookingId },
         data: { reminderJobId: job.id as string },
       });
-      
-      this.logger.log(`Scheduled reminder job ${job.id} for booking ${event.bookingId} in ${delay}ms`);
+
+      this.logger.log(
+        `Scheduled reminder job ${job.id} for booking ${event.bookingId} in ${delay}ms`,
+      );
     }
   }
 
@@ -59,7 +65,9 @@ export class JobsEventsListener {
 
     if (booking && booking.reminderJobId) {
       await this.remindersQueue.remove(booking.reminderJobId);
-      this.logger.log(`Removed reminder job ${booking.reminderJobId} for booking ${event.removedBookingId}`);
+      this.logger.log(
+        `Removed reminder job ${booking.reminderJobId} for booking ${event.removedBookingId}`,
+      );
     }
   }
 }

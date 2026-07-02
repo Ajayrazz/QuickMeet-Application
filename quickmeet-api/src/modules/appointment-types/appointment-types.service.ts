@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateAppointmentTypeDto, UpdateAppointmentTypeDto } from './dto/appointment-type.dto';
+import {
+  CreateAppointmentTypeDto,
+  UpdateAppointmentTypeDto,
+} from './dto/appointment-type.dto';
 import { ForbiddenResourceException } from '../../common/exceptions/domain.exceptions';
 
 @Injectable()
@@ -17,7 +20,9 @@ export class AppointmentTypesService {
   }
 
   async update(adminId: string, id: string, dto: UpdateAppointmentTypeDto) {
-    const aptType = await this.prisma.appointmentType.findUnique({ where: { id } });
+    const aptType = await this.prisma.appointmentType.findUnique({
+      where: { id },
+    });
     if (!aptType) throw new NotFoundException('Appointment type not found');
     if (aptType.adminId !== adminId) throw new ForbiddenResourceException();
 
@@ -27,7 +32,12 @@ export class AppointmentTypesService {
     });
   }
 
-  async findAll(search?: string, category?: string, page: number = 1, limit: number = 10) {
+  async findAll(
+    search?: string,
+    category?: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     const where: any = {};
     if (search) {
       where.OR = [
@@ -61,7 +71,9 @@ export class AppointmentTypesService {
   }
 
   async findOne(id: string) {
-    const aptType = await this.prisma.appointmentType.findUnique({ where: { id } });
+    const aptType = await this.prisma.appointmentType.findUnique({
+      where: { id },
+    });
     if (!aptType) throw new NotFoundException('Appointment type not found');
     return aptType;
   }

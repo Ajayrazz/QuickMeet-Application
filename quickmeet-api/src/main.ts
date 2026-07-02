@@ -9,10 +9,20 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  
+
   app.useLogger(app.get(Logger));
   app.use(helmet());
-  app.enableCors(); // TODO: restrict this in later phases
+
+  const configService = app.get(ConfigService);
+  const allowedOriginsStr = configService.get<string>('ALLOWED_ORIGINS');
+  const allowedOrigins = allowedOriginsStr
+    ? allowedOriginsStr.split(',').map((o) => o.trim())
+    : '*';
+
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,10 +38,12 @@ async function bootstrap() {
   await redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
 
-  const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
 
   await app.listen(port);
   app.get(Logger).log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});

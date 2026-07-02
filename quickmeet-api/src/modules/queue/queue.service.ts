@@ -26,8 +26,9 @@ export class QueueService {
    */
   async getSnapshot(slotId: string): Promise<QueueSnapshotItem[]> {
     const cacheKey = `queue:${slotId}`;
-    
-    const cached = await this.redisService.getJSON<QueueSnapshotItem[]>(cacheKey);
+
+    const cached =
+      await this.redisService.getJSON<QueueSnapshotItem[]>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -64,7 +65,9 @@ export class QueueService {
       bookingId: b.id,
       userId: b.userId,
       position: b.queuePosition,
-      etaMinutes: b.queuePosition ? calculateETA(b.queuePosition, avgDuration) : 0,
+      etaMinutes: b.queuePosition
+        ? calculateETA(b.queuePosition, avgDuration)
+        : 0,
     }));
 
     // Cache with a short TTL (e.g., 5 minutes)

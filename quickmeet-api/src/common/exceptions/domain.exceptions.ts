@@ -26,18 +26,27 @@ export class SlotFullException extends HttpException {
 
 export class DuplicateBookingException extends HttpException {
   constructor() {
-    super('You already have an active booking for this slot', HttpStatus.CONFLICT);
+    super(
+      'You already have an active booking for this slot',
+      HttpStatus.CONFLICT,
+    );
   }
 }
 
 export class SlotNotOpenException extends HttpException {
   constructor() {
-    super('This slot is not currently open for bookings', HttpStatus.BAD_REQUEST);
+    super(
+      'This slot is not currently open for bookings',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }
 
 export class ForbiddenResourceException extends HttpException {
   constructor() {
-    super('You do not have permission to modify this resource', HttpStatus.FORBIDDEN);
+    super(
+      'You do not have permission to modify this resource',
+      HttpStatus.FORBIDDEN,
+    );
   }
 }

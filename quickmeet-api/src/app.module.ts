@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
+import { RedisService } from './redis/redis.service';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnv } from './config/env.config';
@@ -13,6 +17,8 @@ import { RedisModule } from './redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { JobsModule } from './jobs/bullmq.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { HealthModule } from './health/health.module';
 import { LoggerModule } from 'nestjs-pino';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
@@ -30,10 +36,34 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             singleLine: true,
           },
         },
-        redact: ['req.headers.authorization', 'req.body.password', 'req.body.token', 'req.body.refreshToken'],
+        redact: {
+          paths: [
+            'req.headers.authorization',
+            'req.headers.cookie',
+            'body.password',
+            'body.token',
+            'body.refreshToken',
+            'body.pushToken',
+          ],
+          censor: '[REDACTED]',
+        },
       },
     }),
     EventEmitterModule.forRoot(),
+    ThrottlerModule.forRootAsync({
+      imports: [RedisModule],
+      inject: [RedisService],
+      useFactory: (redisService: RedisService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            ttl: 60000,
+            limit: 100,
+          },
+        ],
+        storage: new ThrottlerStorageRedisService(redisService.getClient()),
+      }),
+    }),
     PrismaModule,
     NotificationsModule,
     AuthModule,
@@ -44,8 +74,16 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     UsersModule,
     QueueModule,
     JobsModule,
+    AnalyticsModule,
+    HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

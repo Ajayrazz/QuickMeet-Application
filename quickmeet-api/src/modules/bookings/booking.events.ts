@@ -19,6 +19,9 @@ export class QueueCompactedEvent {
     public readonly slotId: string,
     public readonly removedBookingId: string,
     public readonly removedPosition: number,
-    public readonly affectedBookings: { bookingId: string; newPosition: number }[],
+    public readonly affectedBookings: {
+      bookingId: string;
+      newPosition: number;
+    }[],
   ) {}
 }

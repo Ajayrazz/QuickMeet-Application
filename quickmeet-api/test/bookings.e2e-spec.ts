@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 
 describe('Bookings Concurrency (e2e)', () => {
@@ -17,7 +17,7 @@ describe('Bookings Concurrency (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    
+
     // 1. Register and login test user to get token
     // 2. Create AppointmentType and Slot with capacity = 1
     userToken = 'dummy-token';
@@ -34,13 +34,16 @@ describe('Bookings Concurrency (e2e)', () => {
       request(app.getHttpServer())
         .post('/bookings')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ slotId })
+        .send({ slotId }),
     );
 
-    const responses = await Promise.all(requests);
+    const results = await Promise.all(requests);
 
-    const successCount = responses.filter(r => r.status === 201).length;
-    const conflictCount = responses.filter(r => r.status === 409).length; // SlotFullException
+    const successCount = results.filter((r: any) => r.status === 201).length;
+    const conflictCount = results.filter((r: any) => r.status === 409).length;
+
+    expect(successCount).toBe(1);
+    expect(conflictCount).toBe(2); // SlotFullException
 
     // Only 1 booking should succeed, the rest should fail due to row locking
     // expect(successCount).toBe(1);

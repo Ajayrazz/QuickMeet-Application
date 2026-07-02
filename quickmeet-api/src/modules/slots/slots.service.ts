@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSlotDto, UpdateSlotDto } from './dto/slot.dto';
 import { ForbiddenResourceException } from '../../common/exceptions/domain.exceptions';
@@ -44,7 +48,8 @@ export class SlotsService {
     });
 
     if (!slot) throw new NotFoundException('Slot not found');
-    if (slot.appointmentType.adminId !== adminId) throw new ForbiddenResourceException();
+    if (slot.appointmentType.adminId !== adminId)
+      throw new ForbiddenResourceException();
 
     return this.prisma.slot.update({
       where: { id },
@@ -78,12 +83,12 @@ export class SlotsService {
 
     return slots.map((slot: any) => {
       const activeBookingsCount = slot.bookings.length;
-      const remainingCapacity = Math.max(0, slot.capacity - activeBookingsCount);
-      
-      const { bookings, ...slotData } = slot;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { bookings, ...slotDetails } = slot;
       return {
-        ...slotData,
-        remainingCapacity,
+        ...slotDetails,
+        availableCapacity: slot.capacity - activeBookingsCount,
       };
     });
   }

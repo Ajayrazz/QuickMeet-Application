@@ -10,7 +10,8 @@ import { JobsEventsListener } from './jobs-events.listener';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         connection: {
-          url: configService.get<string>('REDIS_URL') || 'redis://localhost:6379',
+          url:
+            configService.get<string>('REDIS_URL') || 'redis://localhost:6379',
         },
       }),
     }),

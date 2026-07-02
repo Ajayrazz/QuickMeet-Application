@@ -1,25 +1,41 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/booking.dto';
 import { QueueService } from '../queue/queue.service';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 import { Role, BookingStatus } from '@prisma/client';
 
 @Controller()
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
-    private readonly queueService: QueueService
+    private readonly queueService: QueueService,
   ) {}
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('bookings')
   @UseGuards(JwtAuthGuard)
   async create(@CurrentUser() user: any, @Body() dto: CreateBookingDto) {
     if (!user.isVerified) {
-      throw new BadRequestException('You must verify your email before booking.');
+      throw new BadRequestException(
+        'You must verify your email before booking.',
+      );
     }
     return this.bookingsService.create(user.id, dto);
   }
@@ -50,12 +66,11 @@ export class BookingsController {
   async findMyBookings(
     @CurrentUser() user: any,
     @Query('status') status?: BookingStatus,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() pagination?: PaginationQueryDto,
   ) {
-    const pageNumber = page ? parseInt(page, 10) : 1;
-    const limitNumber = limit ? parseInt(limit, 10) : 10;
-    return this.bookingsService.findMyBookings(user.id, status, pageNumber, limitNumber);
+    const page = pagination?.page || 1;
+    const limit = pagination?.limit || 10;
+    return this.bookingsService.findMyBookings(user.id, status, page, limit);
   }
 
   @Get('bookings/:id')

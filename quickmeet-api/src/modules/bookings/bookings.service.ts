@@ -1,12 +1,29 @@
-import { Injectable, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CreateBookingDto } from './dto/booking.dto';
-import { BookingEvents, BookingCreatedEvent, QueueCompactedEvent } from './booking.events';
-import { SlotFullException, DuplicateBookingException, SlotNotOpenException, ForbiddenResourceException } from '../../common/exceptions/domain.exceptions';
-import { calculateQueuePosition, compactQueuePositions } from '../../common/utils/queue.util';
+import {
+  BookingEvents,
+  BookingCreatedEvent,
+  QueueCompactedEvent,
+} from './booking.events';
+import {
+  SlotFullException,
+  DuplicateBookingException,
+  SlotNotOpenException,
+  ForbiddenResourceException,
+} from '../../common/exceptions/domain.exceptions';
+import {
+  calculateQueuePosition,
+  compactQueuePositions,
+} from '../../common/utils/queue.util';
 import { calculateETA } from '../../common/utils/eta.util';
 import { BookingStatus, SlotStatus } from '@prisma/client';
 
@@ -25,7 +42,14 @@ export class BookingsService {
     const booking = await this.prisma.$transaction(async (tx: any) => {
       // 1. Transactional Row Lock on the Slot
       // This prevents concurrent requests from double-booking when capacity is 1
-      const slots = await tx.$queryRaw<{ id: string; capacity: number; status: string; appointmentTypeId: string }[]>`
+      const slots = await tx.$queryRaw<
+        {
+          id: string;
+          capacity: number;
+          status: string;
+          appointmentTypeId: string;
+        }[]
+      >`
         SELECT id, capacity, status, "appointmentTypeId" 
         FROM "Slot" 
         WHERE id = ${dto.slotId} 
@@ -92,31 +116,57 @@ export class BookingsService {
 
     this.eventEmitter.emit(
       BookingEvents.CREATED,
-      new BookingCreatedEvent(booking.id, booking.slotId, booking.userId, booking.queuePosition!),
+      new BookingCreatedEvent(
+        booking.id,
+        booking.slotId,
+        booking.userId,
+        booking.queuePosition,
+      ),
     );
 
     return booking;
   }
 
   async cancel(userId: string, bookingId: string, isAdmin: boolean) {
-    return this.compactQueue(userId, bookingId, isAdmin, BookingStatus.CANCELLED, 'cancelledAt', BookingEvents.CANCELLED);
+    return this.compactQueue(
+      userId,
+      bookingId,
+      isAdmin,
+      BookingStatus.CANCELLED,
+      'cancelledAt',
+      BookingEvents.CANCELLED,
+    );
   }
 
   async serve(userId: string, bookingId: string) {
-    return this.compactQueue(userId, bookingId, true, BookingStatus.SERVED, 'servedAt', BookingEvents.SERVED);
+    return this.compactQueue(
+      userId,
+      bookingId,
+      true,
+      BookingStatus.SERVED,
+      'servedAt',
+      BookingEvents.SERVED,
+    );
   }
 
   async noShow(userId: string, bookingId: string) {
-    return this.compactQueue(userId, bookingId, true, BookingStatus.NO_SHOW, 'cancelledAt', BookingEvents.NO_SHOW);
+    return this.compactQueue(
+      userId,
+      bookingId,
+      true,
+      BookingStatus.NO_SHOW,
+      'cancelledAt',
+      BookingEvents.NO_SHOW,
+    );
   }
 
   private async compactQueue(
-    userId: string, 
-    bookingId: string, 
+    userId: string,
+    bookingId: string,
     isAdmin: boolean,
     targetStatus: BookingStatus,
     dateField: 'cancelledAt' | 'servedAt',
-    eventName: string
+    eventName: string,
   ) {
     const eventPayload = await this.prisma.$transaction(async (tx: any) => {
       // 1. Lock the slot indirectly via booking (wait, we need to lock the slot row to safely compact)
@@ -134,7 +184,11 @@ export class BookingsService {
       if (isAdmin && targetBooking.slot.appointmentType.adminId !== userId) {
         throw new ForbiddenResourceException();
       }
-      if (![BookingStatus.CONFIRMED, BookingStatus.IN_QUEUE].includes(targetBooking.status)) {
+      if (
+        ![BookingStatus.CONFIRMED, BookingStatus.IN_QUEUE].includes(
+          targetBooking.status,
+        )
+      ) {
         throw new BadRequestException('Booking cannot be modified');
       }
 
@@ -188,7 +242,12 @@ export class BookingsService {
     return { message: `Booking marked as ${targetStatus}` };
   }
 
-  async findMyBookings(userId: string, status?: BookingStatus, page: number = 1, limit: number = 10) {
+  async findMyBookings(
+    userId: string,
+    status?: BookingStatus,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     const where: any = { userId };
     if (status) where.status = status;
 
@@ -217,8 +276,10 @@ export class BookingsService {
 
     if (!booking) throw new NotFoundException('Booking not found');
 
-    if (!isAdmin && booking.userId !== userId) throw new ForbiddenResourceException();
-    if (isAdmin && booking.slot.appointmentType.adminId !== userId) throw new ForbiddenResourceException();
+    if (!isAdmin && booking.userId !== userId)
+      throw new ForbiddenResourceException();
+    if (isAdmin && booking.slot.appointmentType.adminId !== userId)
+      throw new ForbiddenResourceException();
 
     return booking;
   }
@@ -246,7 +307,7 @@ export class BookingsService {
       bookingId: b.id,
       userId: b.userId,
       position: b.queuePosition,
-      etaMinutes: calculateETA(b.queuePosition!, avgDuration),
+      etaMinutes: calculateETA(b.queuePosition, avgDuration),
     }));
   }
 }

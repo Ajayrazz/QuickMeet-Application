@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { WsException } from '@nestjs/websockets';
@@ -18,7 +23,7 @@ export class WsAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const client: Socket = context.switchToWs().getClient();
     const token = this.extractTokenFromHeader(client);
-    
+
     if (!token) {
       throw new WsException('Unauthorized');
     }
@@ -28,7 +33,7 @@ export class WsAuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
-      
+
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
         select: { id: true, role: true, isVerified: true },
@@ -40,7 +45,6 @@ export class WsAuthGuard implements CanActivate {
 
       // Attach user to socket
       (client as any).user = user;
-      
     } catch (error) {
       this.logger.error('WebSocket Auth Error', error);
       throw new WsException('Unauthorized');

@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { QueueService } from './queue.service';
 import { QueueGateway } from './queue.gateway';
-import { BookingEvents, BookingCreatedEvent, QueueCompactedEvent } from '../bookings/booking.events';
+import {
+  BookingEvents,
+  BookingCreatedEvent,
+  QueueCompactedEvent,
+} from '../bookings/booking.events';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
@@ -18,12 +22,16 @@ export class QueueEventsListener {
   @OnEvent(BookingEvents.CREATED)
   async handleBookingCreated(event: BookingCreatedEvent) {
     this.logger.log(`Processing BookingCreatedEvent for slot ${event.slotId}`);
-    
+
     // Rebuild cache
-    const snapshot = await this.queueService.rebuildAndCacheSnapshot(event.slotId);
-    
+    const snapshot = await this.queueService.rebuildAndCacheSnapshot(
+      event.slotId,
+    );
+
     // Broadcast to room
-    this.queueGateway.server.to(`slot:${event.slotId}`).emit('queue:update', snapshot);
+    this.queueGateway.server
+      .to(`slot:${event.slotId}`)
+      .emit('queue:update', snapshot);
 
     // Send Notification
     await this.notificationsService.sendNotification(
@@ -39,16 +47,22 @@ export class QueueEventsListener {
   @OnEvent(BookingEvents.SERVED)
   @OnEvent(BookingEvents.NO_SHOW)
   async handleQueueCompacted(event: QueueCompactedEvent) {
-    this.logger.log(`Processing compaction for slot ${event.slotId} (removed pos ${event.removedPosition})`);
-    
-    const snapshot = await this.queueService.rebuildAndCacheSnapshot(event.slotId);
-    this.queueGateway.server.to(`slot:${event.slotId}`).emit('queue:update', snapshot);
+    this.logger.log(
+      `Processing compaction for slot ${event.slotId} (removed pos ${event.removedPosition})`,
+    );
+
+    const snapshot = await this.queueService.rebuildAndCacheSnapshot(
+      event.slotId,
+    );
+    this.queueGateway.server
+      .to(`slot:${event.slotId}`)
+      .emit('queue:update', snapshot);
 
     // Check if anyone reached position 1
     for (const b of event.affectedBookings) {
       if (b.newPosition === 1) {
         // Find the user ID from the snapshot
-        const userSnapshot = snapshot.find(s => s.bookingId === b.bookingId);
+        const userSnapshot = snapshot.find((s) => s.bookingId === b.bookingId);
         if (userSnapshot) {
           const personalRoom = `user:${userSnapshot.userId}`;
           this.queueGateway.server.to(personalRoom).emit('queue:your-turn', {
@@ -66,7 +80,7 @@ export class QueueEventsListener {
         }
       } else if (b.newPosition <= 3) {
         // Optional: warn them if they are getting close
-        const userSnapshot = snapshot.find(s => s.bookingId === b.bookingId);
+        const userSnapshot = snapshot.find((s) => s.bookingId === b.bookingId);
         if (userSnapshot) {
           await this.notificationsService.sendNotification(
             userSnapshot.userId,

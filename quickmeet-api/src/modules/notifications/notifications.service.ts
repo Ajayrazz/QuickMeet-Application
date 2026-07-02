@@ -1,6 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotificationProvider } from './notification-provider.interface';
 
 @Injectable()
 export class NotificationsService {
@@ -39,9 +38,11 @@ export class NotificationsService {
       // 3. Attempt Push if Token Exists
       if (user && user.pushToken) {
         // Fire-and-forget to avoid blocking the caller
-        this.provider.sendPush(user.pushToken, title, body, { type, relatedBookingId }).catch((err: any) => {
-          this.logger.error('Failed to send push inside promise catch', err);
-        });
+        this.provider
+          .sendPush(user.pushToken, title, body, { type, relatedBookingId })
+          .catch((err: any) => {
+            this.logger.error('Failed to send push inside promise catch', err);
+          });
       }
     } catch (error) {
       // Catch all to ensure business transactions (like bookings) don't fail due to notification failures
@@ -49,7 +50,11 @@ export class NotificationsService {
     }
   }
 
-  async getMyNotifications(userId: string, page: number = 1, limit: number = 20) {
+  async getMyNotifications(
+    userId: string,
+    page: number = 1,
+    limit: number = 20,
+  ) {
     const [data, total] = await Promise.all([
       this.prisma.notification.findMany({
         where: { userId },
@@ -67,7 +72,9 @@ export class NotificationsService {
   }
 
   async markAsRead(userId: string, id: string) {
-    const notification = await this.prisma.notification.findUnique({ where: { id } });
+    const notification = await this.prisma.notification.findUnique({
+      where: { id },
+    });
     if (!notification || notification.userId !== userId) {
       return null;
     }

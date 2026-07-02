@@ -1,4 +1,11 @@
-import { IsString, IsDateString, IsInt, Min, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsDateString,
+  IsInt,
+  Min,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { SlotStatus } from '@prisma/client';
 
 export class CreateSlotDto {
