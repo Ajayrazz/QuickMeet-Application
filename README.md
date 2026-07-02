@@ -1,285 +1,159 @@
 # QuickMeet 🚀
 
-A modern, full-stack appointment booking and real-time queue management platform built with **NestJS**, **React Native (Expo)**, **PostgreSQL**, and **Socket.IO**.
+**QuickMeet** is a production-grade, real-time smart appointment and queue management platform. It bridges the gap between digital bookings and physical waiting rooms, eliminating long wait times and providing a seamless, live-updated experience for both end-users and service providers.
 
-QuickMeet bridges the gap between online appointment booking and physical waiting rooms by providing live queue updates, QR-based check-ins, push notifications, and an intuitive admin dashboard for managing appointments and customer flow.
-
----
-
-## ✨ Features
-
-### 👤 User Features
-
-* Secure user authentication with JWT
-* Browse available appointment types
-* Book appointments with available time slots
-* View booking history
-* Receive a digital QR code for check-in
-* Track live queue position and estimated waiting time
-* Receive push notifications when it's almost your turn
-* Dark mode support
-
-### 🛠️ Admin Features
-
-* Secure admin authentication
-* Create, update, and delete appointment types
-* Manage appointment slots
-* Real-time queue management
-* Scan QR codes for customer check-in
-* Mark appointments as:
-
-  * Pending
-  * In Progress
-  * Completed
-  * No Show
-* View booking statistics and analytics
+This repository contains the complete full-stack application, divided into two main workspaces:
+- **`quickmeet-api`**: The robust backend built with NestJS.
+- **`quickmeet-app`**: The cross-platform mobile application built with React Native and Expo.
 
 ---
 
-## 🏗️ Tech Stack
+## 🌟 Key Features
 
-### Backend
+### For Users (End-Users)
+- **Smart Booking Flow**: Browse available appointment types and seamlessly book time slots.
+- **Real-Time Queue Tracking**: Live updates on queue position and Estimated Time of Arrival (ETA) powered by WebSockets.
+- **Digital QR Tickets**: Secure QR code generation for quick check-ins at the physical location.
+- **Push Notifications**: Receive instant alerts when it's your turn to proceed to the desk.
 
-* NestJS
-* TypeScript
-* PostgreSQL
-* Prisma ORM
-* JWT Authentication
-* Argon2 Password Hashing
-* Socket.IO
-* Class Validator
-* Class Transformer
-
-### Mobile App
-
-* React Native
-* Expo
-* Expo Router
-* NativeWind
-* Zustand
-* TanStack Query
-* React Hook Form
-* Zod
-* Expo Secure Store
-* Expo Notifications
+### For Admins (Service Providers)
+- **Role-Based Admin Dashboard**: A gated interface to manage the entire service operation.
+- **Service & Slot Management**: Create, edit, and publish appointment types and time slots dynamically.
+- **Live Queue Control**: A real-time control center to manually adjust queue statuses (e.g., mark as "In Progress", "Completed", or "No Show").
+- **QR Scanning**: Built-in camera integration to scan user QR tickets and instantly retrieve booking details.
+- **Business Analytics**: High-level metrics tracking total bookings and slot utilization over time.
 
 ---
 
-## 📁 Project Structure
+## 🏗 Tech Stack
 
-```text
-QuickMeet/
-│
-├── quickmeet-api/
-│   ├── prisma/
+### Backend (`quickmeet-api`)
+- **Framework**: [NestJS](https://nestjs.com/) (TypeScript strict mode)
+- **Database**: PostgreSQL with [Prisma ORM](https://www.prisma.io/)
+- **Authentication**: JWT access tokens, Refresh Token rotation, and secure password hashing via `argon2`.
+- **Real-Time**: [Socket.IO](https://socket.io/) (via `@nestjs/platform-socket.io`) for live queue updates on the `/queue` namespace.
+- **Validation & Serialization**: `class-validator` and `class-transformer`.
+- **Architecture**: Domain-driven modules (Auth, Users, AppointmentTypes, Slots, Bookings, Queue, Notifications, Analytics).
+
+### Mobile App (`quickmeet-app`)
+- **Framework**: [Expo](https://expo.dev/) (React Native) with managed workflow.
+- **Routing**: Expo Router (file-based navigation with layout groups like `(auth)`, `(tabs)`, and `(admin)`).
+- **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS for React Native) featuring a complete custom Design System with Dark Mode support.
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand) for global client state (e.g., Auth Session).
+- **Data Fetching**: [TanStack Query](https://tanstack.com/query/v5) (React Query) for caching and synchronizing server state.
+- **Forms & Validation**: React Hook Form combined with Zod for strict type-safe schemas.
+- **Local Storage**: `expo-secure-store` for secure token persistence.
+
+---
+
+## 📂 Repository Structure
+
+```
+QuickMeet-Application/
+├── quickmeet-api/          # NestJS Backend Project
+│   ├── prisma/             # Database schema and migrations
 │   ├── src/
-│   ├── test/
-│   ├── package.json
-│   └── .env
+│   │   ├── modules/        # Feature modules (auth, bookings, queue, etc.)
+│   │   ├── common/         # Global guards, decorators, and interceptors
+│   │   └── main.ts         # App entry point
+│   └── test/               # E2E test suites
 │
-├── quickmeet-app/
-│   ├── app/
+├── quickmeet-app/          # Expo / React Native Mobile App
+│   ├── app/                # Expo Router file-based navigation tree
+│   │   ├── (auth)/         # Unauthenticated routes (Login, Register)
+│   │   ├── (tabs)/         # Standard user routes (Home, Profile, Bookings)
+│   │   └── (admin)/        # Gated admin-only routes (Dashboard, Queue Control)
 │   ├── src/
-│   ├── assets/
-│   ├── package.json
-│   └── .env
-│
-└── README.md
+│   │   ├── api/            # Axios clients and TanStack Query fetchers
+│   │   ├── components/     # Reusable UI kit and domain-specific components
+│   │   ├── hooks/          # Custom React hooks (Socket sync, push registration)
+│   │   ├── lib/            # Utilities (Socket.IO client, classnames merger)
+│   │   └── stores/         # Zustand global stores
+│   └── tailwind.config.js  # NativeWind theme configuration
+└── README.md               # Global project documentation
 ```
 
 ---
 
-# 🚀 Getting Started
+## 🚀 Getting Started
 
-## Prerequisites
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL (Running locally or via Docker)
+- Expo CLI (`npm install -g expo-cli`)
+- Expo Go app on your physical device (for testing push notifications/camera)
 
-* Node.js 18+
-* PostgreSQL
-* npm or yarn
-* Expo Go (for mobile testing)
+### 1. Backend Setup (`quickmeet-api`)
 
----
+1. **Navigate to the backend directory**:
+   ```bash
+   cd quickmeet-api
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Environment Configuration**:
+   Create a `.env` file in the root of `quickmeet-api`:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/quickmeet?schema=public"
+   JWT_SECRET="your-super-secret-jwt-key"
+   JWT_REFRESH_SECRET="your-super-secret-refresh-key"
+   PORT=3000
+   ```
+4. **Database Migrations**:
+   Apply the Prisma schema to your PostgreSQL instance:
+   ```bash
+   npx prisma migrate dev
+   ```
+5. **Start the Server**:
+   ```bash
+   npm run start:dev
+   ```
 
-## Backend Setup
+### 2. Mobile App Setup (`quickmeet-app`)
 
-Navigate to the backend folder.
-
-```bash
-cd quickmeet-api
-```
-
-Install dependencies.
-
-```bash
-npm install
-```
-
-Create a `.env` file.
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/quickmeet?schema=public"
-
-JWT_SECRET="your-secret"
-
-JWT_REFRESH_SECRET="your-refresh-secret"
-
-PORT=3000
-```
-
-Run Prisma migrations.
-
-```bash
-npx prisma migrate dev
-```
-
-Start the backend.
-
-```bash
-npm run start:dev
-```
-
-Backend will run on:
-
-```
-http://localhost:3000
-```
-
----
-
-## Mobile App Setup
-
-Navigate to the mobile application.
-
-```bash
-cd ../quickmeet-app
-```
-
-Install dependencies.
-
-```bash
-npm install
-```
-
-Create a `.env` file.
-
-```env
-EXPO_PUBLIC_API_URL=http://YOUR_LOCAL_IP:3000
-
-EXPO_PUBLIC_WS_URL=ws://YOUR_LOCAL_IP:3000
-```
-
-Start Expo.
-
-```bash
-npx expo start --clear
-```
-
-Scan the QR code using Expo Go.
+1. **Navigate to the frontend directory**:
+   ```bash
+   cd ../quickmeet-app
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Environment Configuration**:
+   Create a `.env` file in the root of `quickmeet-app`:
+   ```env
+   # Replace with your local machine's IP address (e.g., 192.168.1.x)
+   EXPO_PUBLIC_API_URL="http://<YOUR_LOCAL_IP>:3000"
+   EXPO_PUBLIC_WS_URL="ws://<YOUR_LOCAL_IP>:3000"
+   ```
+4. **Start the Expo Development Server**:
+   ```bash
+   npx expo start --clear
+   ```
+5. **Run on Device**:
+   Scan the QR code displayed in the terminal using the Expo Go app on your iOS or Android device.
 
 ---
 
-# 🔐 Authentication
+## 🔐 Authentication & Roles
 
-QuickMeet uses:
+QuickMeet supports two main user roles: `USER` and `ADMIN`.
+By default, new sign-ups are assigned the `USER` role.
 
-* JWT Access Tokens
-* Refresh Token Rotation
-* Argon2 Password Hashing
-* Role-Based Authorization
-
-Available roles:
-
-* USER
-* ADMIN
-
-To promote a user to an administrator:
-
+To test the Admin functionality, you can manually update a user's role directly in the PostgreSQL database:
 ```sql
-UPDATE "User"
-SET role='ADMIN'
-WHERE email='your-email@example.com';
+UPDATE "User" SET role = 'ADMIN' WHERE email = 'your-email@example.com';
 ```
 
 ---
 
-# ⚡ Real-Time Features
+## 💡 System Architecture Highlights
 
-* Live queue updates using Socket.IO
-* Automatic queue position updates
-* Estimated waiting time
-* QR-based check-in
-* Push notifications
-* Automatic token refresh
-* Live synchronization across connected devices
+- **JWT Token Rotation**: The mobile app seamlessly intercepts 401 Unauthorized responses via Axios interceptors, silently requesting a new access token using the stored refresh token, ensuring the user stays logged in securely without disruption.
+- **WebSocket Synchronization**: The mobile client maintains a persistent Socket.IO connection. The backend broadcasts `queue:update` and `queue:your-turn` events targeted precisely to specific Slot rooms, minimizing network overhead.
+- **Push Notification Pipeline**: The app requests device push tokens using `expo-notifications`, securely stores them in the backend database, and processes triggered server-side events to alert users even when the app is backgrounded.
 
 ---
-
-# 📊 Architecture
-
-```text
-React Native App
-        │
-        │ REST API + WebSockets
-        ▼
-NestJS Backend
-        │
-        ▼
-Prisma ORM
-        │
-        ▼
-PostgreSQL
-```
-
----
-
-# 📱 Screens
-
-* Login
-* Register
-* Home
-* Book Appointment
-* Appointment Details
-* QR Ticket
-* Queue Tracking
-* Profile
-* Admin Dashboard
-* Queue Management
-* QR Scanner
-* Analytics
-
----
-
-# 📦 API Modules
-
-* Authentication
-* Users
-* Appointment Types
-* Slots
-* Bookings
-* Queue
-* Notifications
-* Analytics
-
----
-
-# 🚀 Future Improvements
-
-* Email notifications
-* SMS reminders
-* Payment integration
-* Calendar synchronization
-* Multi-branch support
-* Doctor/Service provider scheduling
-* AI-powered waiting time prediction
-
----
-
-# 📄 License
-
-This project is intended for educational and portfolio purposes.
-
----
-
-## 👨‍💻 Author
-
-Developed with ❤️ using modern full-stack technologies including NestJS, React Native, Expo, PostgreSQL, Prisma, Socket.IO, and TypeScript.
+*Developed with modern best practices for performance, strict type-safety, and elegant UI/UX design.*
