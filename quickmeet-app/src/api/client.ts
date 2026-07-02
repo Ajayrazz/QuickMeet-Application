@@ -37,6 +37,16 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      // Do not attempt to refresh if the request was an auth route (like login)
+      if (originalRequest.url?.includes('/auth/')) {
+        return Promise.reject(error);
+      }
+
+      const refreshToken = useAuthStore.getState().refreshToken;
+      if (!refreshToken) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -52,8 +62,6 @@ apiClient.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-
-      const refreshToken = useAuthStore.getState().refreshToken;
       
       try {
         const { data } = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {

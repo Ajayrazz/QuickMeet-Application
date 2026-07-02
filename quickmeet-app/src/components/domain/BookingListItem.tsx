@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Clock, MapPin } from 'lucide-react-native';
 import { format, parseISO } from 'date-fns';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Booking } from '../../api/bookings.api';
 import { Badge } from '../ui/Misc';
 import { Card } from '../ui/Card';
 
 export const BookingListItem = ({ booking }: { booking: Booking }) => {
+  const router = useRouter();
+  
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
@@ -27,9 +29,11 @@ export const BookingListItem = ({ booking }: { booking: Booking }) => {
   const location = booking.slot?.appointmentType?.location;
 
   return (
-    <Link href={`/booking/${booking.id}`} asChild>
-      <Pressable className="mb-3">
-        <Card className="p-4 active:bg-gray-50 dark:active:bg-slate-800 flex-row">
+    <Pressable 
+      className="mb-3"
+      onPress={() => router.push(`/booking/${booking.id}`)}
+    >
+      <Card className="p-4 active:bg-gray-50 dark:active:bg-slate-800 flex-row">
           {/* Date Block */}
           <View className="bg-primary/10 dark:bg-primary-dark/20 rounded-xl p-3 items-center justify-center min-w-[70px] mr-4">
             <Text className="text-xs font-bold text-primary dark:text-primary-light uppercase">
@@ -67,8 +71,7 @@ export const BookingListItem = ({ booking }: { booking: Booking }) => {
               )}
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+      </Card>
+    </Pressable>
   );
 };

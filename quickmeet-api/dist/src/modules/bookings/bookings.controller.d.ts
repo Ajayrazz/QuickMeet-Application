@@ -34,23 +34,23 @@ export declare class BookingsController {
             } & {
                 id: string;
                 createdAt: Date;
-                appointmentTypeId: string;
                 startTime: Date;
                 endTime: Date;
                 capacity: number;
                 status: import("@prisma/client").$Enums.SlotStatus;
+                appointmentTypeId: string;
             };
         } & {
             id: string;
-            userId: string;
             status: import("@prisma/client").$Enums.BookingStatus;
-            slotId: string;
             queuePosition: number | null;
             qrCode: string | null;
             bookedAt: Date;
             servedAt: Date | null;
             cancelledAt: Date | null;
             reminderJobId: string | null;
+            userId: string;
+            slotId: string;
         })[];
         meta: {
             total: number;
@@ -75,23 +75,23 @@ export declare class BookingsController {
         } & {
             id: string;
             createdAt: Date;
-            appointmentTypeId: string;
             startTime: Date;
             endTime: Date;
             capacity: number;
             status: import("@prisma/client").$Enums.SlotStatus;
+            appointmentTypeId: string;
         };
     } & {
         id: string;
-        userId: string;
         status: import("@prisma/client").$Enums.BookingStatus;
-        slotId: string;
         queuePosition: number | null;
         qrCode: string | null;
         bookedAt: Date;
         servedAt: Date | null;
         cancelledAt: Date | null;
         reminderJobId: string | null;
+        userId: string;
+        slotId: string;
     }>;
     getQueueSnapshot(slotId: string): Promise<import("../queue/queue.service").QueueSnapshotItem[]>;
 }

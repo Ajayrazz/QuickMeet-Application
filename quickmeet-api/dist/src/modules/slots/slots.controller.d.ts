@@ -6,20 +6,20 @@ export declare class SlotsController {
     create(user: any, dto: CreateSlotDto): Promise<{
         id: string;
         createdAt: Date;
-        appointmentTypeId: string;
         startTime: Date;
         endTime: Date;
         capacity: number;
         status: import("@prisma/client").$Enums.SlotStatus;
+        appointmentTypeId: string;
     }>;
     update(user: any, id: string, dto: UpdateSlotDto): Promise<{
         id: string;
         createdAt: Date;
-        appointmentTypeId: string;
         startTime: Date;
         endTime: Date;
         capacity: number;
         status: import("@prisma/client").$Enums.SlotStatus;
+        appointmentTypeId: string;
     }>;
     findByAppointmentTypeAndDate(appointmentTypeId: string, date: string): Promise<any[]>;
 }

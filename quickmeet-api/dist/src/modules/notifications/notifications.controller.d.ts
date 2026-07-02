@@ -5,11 +5,11 @@ export declare class NotificationsController {
     constructor(notificationsService: NotificationsService);
     getMyNotifications(user: any, pagination?: PaginationQueryDto): Promise<{
         data: {
-            type: string;
             id: string;
             createdAt: Date;
-            userId: string;
             title: string;
+            userId: string;
+            type: string;
             body: string;
             isRead: boolean;
             relatedBookingId: string | null;
@@ -22,11 +22,11 @@ export declare class NotificationsController {
         };
     }>;
     markAsRead(user: any, id: string): Promise<{
-        type: string;
         id: string;
         createdAt: Date;
-        userId: string;
         title: string;
+        userId: string;
+        type: string;
         body: string;
         isRead: boolean;
         relatedBookingId: string | null;

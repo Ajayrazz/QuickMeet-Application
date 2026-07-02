@@ -1,12 +1,11 @@
 {
   "expo": {
     "name": "quickmeet-app",
-    "slug": "quickmeet-app",
+    "slug": "ajayrazz",
     "scheme": "quickmeet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "quickmeetapp",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -18,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ajaypratap8steam.ajayrazz"
     },
     "web": {
       "output": "static",
@@ -36,8 +36,14 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    }
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e1f97178-367d-4516-9130-d2ee5efa7ecb"
+      }
+    },
+    "owner": "ajaypratap8s-team"
   }
 }

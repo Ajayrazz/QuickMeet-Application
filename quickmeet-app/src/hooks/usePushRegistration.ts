@@ -18,7 +18,7 @@ try {
     }),
   });
 } catch {
-  console.warn('expo-notifications is not available in Expo Go SDK 53+');
+  console.log('expo-notifications is not available in Expo Go SDK 53+');
 }
 
 async function registerForPushNotificationsAsync() {
