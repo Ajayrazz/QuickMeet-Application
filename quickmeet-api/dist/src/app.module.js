@@ -10,8 +10,6 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
-const nestjs_throttler_storage_redis_1 = require("nestjs-throttler-storage-redis");
-const redis_service_1 = require("./redis/redis.service");
 const core_1 = require("@nestjs/core");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
@@ -62,20 +60,11 @@ exports.AppModule = AppModule = __decorate([
                 },
             }),
             event_emitter_1.EventEmitterModule.forRoot(),
-            throttler_1.ThrottlerModule.forRootAsync({
-                imports: [redis_module_1.RedisModule],
-                inject: [redis_service_1.RedisService],
-                useFactory: (redisService) => ({
-                    throttlers: [
-                        {
-                            name: 'default',
-                            ttl: 60000,
-                            limit: 100,
-                        },
-                    ],
-                    storage: new nestjs_throttler_storage_redis_1.ThrottlerStorageRedisService(redisService.getClient()),
-                }),
-            }),
+            throttler_1.ThrottlerModule.forRoot([{
+                    name: 'default',
+                    ttl: 60000,
+                    limit: 100,
+                }]),
             prisma_module_1.PrismaModule,
             notifications_module_1.NotificationsModule,
             auth_module_1.AuthModule,

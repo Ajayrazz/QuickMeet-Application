@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 import { RedisService } from './redis/redis.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -50,20 +49,11 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       },
     }),
     EventEmitterModule.forRoot(),
-    ThrottlerModule.forRootAsync({
-      imports: [RedisModule],
-      inject: [RedisService],
-      useFactory: (redisService: RedisService) => ({
-        throttlers: [
-          {
-            name: 'default',
-            ttl: 60000,
-            limit: 100,
-          },
-        ],
-        storage: new ThrottlerStorageRedisService(redisService.getClient()),
-      }),
-    }),
+    ThrottlerModule.forRoot([{
+      name: 'default',
+      ttl: 60000,
+      limit: 100,
+    }]),
     PrismaModule,
     NotificationsModule,
     AuthModule,
