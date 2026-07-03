@@ -4,6 +4,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from 'ioredis';
 import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { getRedisOptions } from '../config/redis.config';
 
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: any;
@@ -17,12 +18,18 @@ export class RedisIoAdapter extends IoAdapter {
     const redisUrl =
       configService.get<string>('REDIS_URL') || 'redis://localhost:6379';
 
-    const pubClient = new Redis(redisUrl);
+    const pubClient = new Redis(redisUrl, getRedisOptions());
     const subClient = pubClient.duplicate();
 
     await Promise.all([
-      new Promise<void>((resolve) => pubClient.on('connect', resolve)),
-      new Promise<void>((resolve) => subClient.on('connect', resolve)),
+      new Promise<void>((resolve, reject) => {
+        pubClient.once('ready', () => resolve());
+        pubClient.once('error', reject);
+      }),
+      new Promise<void>((resolve, reject) => {
+        subClient.once('ready', () => resolve());
+        subClient.once('error', reject);
+      }),
     ]);
 
     this.adapterConstructor = createAdapter(pubClient, subClient);

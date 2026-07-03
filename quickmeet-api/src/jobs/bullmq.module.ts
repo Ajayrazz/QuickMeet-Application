@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { ReminderProcessor } from './processors/reminder.processor';
 import { JobsEventsListener } from './jobs-events.listener';
+import { getRedisOptions } from '../config/redis.config';
 
 @Module({
   imports: [
@@ -10,8 +11,8 @@ import { JobsEventsListener } from './jobs-events.listener';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         connection: {
-          url:
-            configService.get<string>('REDIS_URL') || 'redis://localhost:6379',
+          url: configService.get<string>('REDIS_URL') || 'redis://localhost:6379',
+          ...getRedisOptions(),
         },
       }),
     }),
