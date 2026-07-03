@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useQueueSnapshot } from '../../../src/hooks/useBookings';
 import { useQueueSocket } from '../../../src/hooks/useQueueSocket';
 import { useAdminQueueActions } from '../../../src/hooks/useAdminQueueActions';
@@ -27,33 +28,43 @@ export default function AdminQueueControlScreen() {
 
   if (isQueueLoading) {
     return (
-      <View className="flex-1 bg-background dark:bg-background-dark p-6 pt-12">
-        <Skeleton className="w-1/2 h-8 mb-6" />
-        <Card className="h-20 mb-4 p-4 flex-row items-center">
-          <Skeleton className="w-10 h-10 rounded-full mr-4" />
-          <View className="flex-1"><Skeleton className="w-2/3 h-5 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
-        </Card>
-        <Card className="h-20 mb-4 p-4 flex-row items-center">
-          <Skeleton className="w-10 h-10 rounded-full mr-4" />
-          <View className="flex-1"><Skeleton className="w-2/3 h-5 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
-        </Card>
+      <View className="flex-1 bg-background dark:bg-background-dark">
+        <View className="px-6 pt-16 pb-12 rounded-b-[40px] mb-6 bg-indigo-900/10">
+          <Skeleton className="w-1/2 h-10 mb-4" />
+          <Skeleton className="w-1/3 h-5" />
+        </View>
+        <View className="px-6">
+          <Card className="h-24 mb-4 p-5 flex-row items-center rounded-2xl">
+            <Skeleton className="w-12 h-12 rounded-full mr-4" />
+            <View className="flex-1"><Skeleton className="w-2/3 h-6 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+          </Card>
+          <Card className="h-24 mb-4 p-5 flex-row items-center rounded-2xl">
+            <Skeleton className="w-12 h-12 rounded-full mr-4" />
+            <View className="flex-1"><Skeleton className="w-2/3 h-6 mb-2" /><Skeleton className="w-1/3 h-4" /></View>
+          </Card>
+        </View>
       </View>
     );
   }
 
   return (
     <View className="flex-1 bg-background dark:bg-background-dark">
-      <View className="px-6 pt-6 pb-4">
-        <Text className="text-3xl font-bold text-text dark:text-text-dark mb-1">Live Queue</Text>
-        <View className="flex-row items-center">
-          <View className={`w-2 h-2 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-          <Text className="text-sm text-text-muted dark:text-text-muted-dark">
+      <LinearGradient
+        colors={['#1e1b4b', '#4338ca']}
+        className="px-6 pt-16 pb-10 rounded-b-[40px] shadow-md mb-6"
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Text className="text-4xl font-extrabold text-white tracking-tight mb-3">Live Queue</Text>
+        <View className="flex-row items-center bg-white/10 self-start px-3 py-1.5 rounded-full">
+          <View className={`w-2.5 h-2.5 rounded-full mr-2 shadow-sm ${isConnected ? 'bg-green-400 shadow-green-400/50' : 'bg-red-400 shadow-red-400/50'}`} />
+          <Text className="text-sm font-semibold text-white">
             {isConnected ? 'Connected & Live' : 'Reconnecting...'}
           </Text>
         </View>
-      </View>
+      </LinearGradient>
 
-      <ScrollView contentContainerClassName="p-6 pb-32">
+      <ScrollView contentContainerClassName="px-6 pb-32">
         {fullQueue.length > 0 ? (
           fullQueue.map((item, index) => {
             const isProcessing = (isServing && servingId === item.bookingId) || (isMarkingNoShow && noShowId === item.bookingId);
@@ -69,10 +80,12 @@ export default function AdminQueueControlScreen() {
             );
           })
         ) : (
-          <EmptyState
-            title="Queue is empty"
-            description="Nobody is waiting for this slot currently."
-          />
+          <View className="mt-8">
+            <EmptyState
+              title="Queue is empty"
+              description="Nobody is waiting for this slot currently. You can relax!"
+            />
+          </View>
         )}
       </ScrollView>
     </View>

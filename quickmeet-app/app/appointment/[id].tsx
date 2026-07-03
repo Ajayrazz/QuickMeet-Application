@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAppointmentType } from '../../src/hooks/useAppointmentTypes';
 import { useSlots } from '../../src/hooks/useSlots';
 import { useCreateBooking } from '../../src/hooks/useBookings';
@@ -30,18 +31,18 @@ export default function AppointmentDetailScreen() {
   if (isTypeLoading) {
     return (
       <View className="flex-1 bg-background dark:bg-background-dark">
-        <View className="p-6 bg-primary/10 dark:bg-primary-dark/20 rounded-b-3xl mb-4 pt-12">
-          <Skeleton className="w-20 h-6 rounded-full mb-4" />
+        <View className="p-6 bg-primary/10 dark:bg-primary-dark/20 rounded-b-3xl mb-4 pt-12 h-64">
+          <Skeleton className="w-20 h-6 rounded-full mb-4 mt-8" />
           <Skeleton className="w-2/3 h-10 mb-2" />
           <Skeleton className="w-full h-4 mb-1" />
           <Skeleton className="w-3/4 h-4" />
         </View>
         <View className="p-6">
           <Skeleton className="w-1/3 h-6 mb-4" />
-          <Skeleton className="w-full h-16 mb-8" />
+          <Skeleton className="w-full h-24 mb-8 rounded-full" />
           <Skeleton className="w-1/3 h-6 mb-4" />
-          <Skeleton className="w-full h-20 mb-4" />
-          <Skeleton className="w-full h-20" />
+          <Skeleton className="w-full h-20 mb-4 rounded-2xl" />
+          <Skeleton className="w-full h-20 rounded-2xl" />
         </View>
       </View>
     );
@@ -88,18 +89,25 @@ export default function AppointmentDetailScreen() {
     <View className="flex-1 bg-background dark:bg-background-dark">
       <ScrollView contentContainerClassName="pb-32">
         {/* Header */}
-        <View className="p-6 bg-primary/10 dark:bg-primary-dark/20 rounded-b-3xl mb-4">
-          <Badge label={type.category || 'General'} className="self-start mb-4" />
-          <Text className="text-3xl font-bold text-text dark:text-text-dark mb-2">
+        <LinearGradient
+          colors={['#4f46e5', '#818cf8']}
+          className="p-6 pt-16 pb-12 rounded-b-[40px] mb-6 shadow-md"
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View className="bg-white/20 self-start px-3 py-1 rounded-full mb-4">
+            <Text className="text-white font-bold text-xs">{type.category || 'General'}</Text>
+          </View>
+          <Text className="text-3xl font-extrabold text-white mb-2 tracking-tight">
             {type.title}
           </Text>
-          <Text className="text-text-muted dark:text-text-muted-dark leading-relaxed">
+          <Text className="text-indigo-100 leading-relaxed font-medium">
             {type.description}
           </Text>
-        </View>
+        </LinearGradient>
 
         {/* Date Picker */}
-        <Text className="text-lg font-bold text-text dark:text-text-dark px-6 mb-2">Select Date</Text>
+        <Text className="text-xl font-bold text-text dark:text-text-dark px-6 mb-3">Select Date</Text>
         <DateStrip 
           selectedDate={selectedDate} 
           onSelectDate={(date) => {
@@ -109,16 +117,16 @@ export default function AppointmentDetailScreen() {
         />
 
         {/* Slots */}
-        <View className="px-6 mt-4">
-          <Text className="text-lg font-bold text-text dark:text-text-dark mb-4">
+        <View className="px-6 mt-6">
+          <Text className="text-xl font-bold text-text dark:text-text-dark mb-4">
             Available Times
           </Text>
           
           {isSlotsLoading ? (
             <View>
-              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
-              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
-              <Skeleton className="w-full h-20 mb-4 rounded-xl" />
+              <Skeleton className="w-full h-24 mb-4 rounded-2xl" />
+              <Skeleton className="w-full h-24 mb-4 rounded-2xl" />
+              <Skeleton className="w-full h-24 mb-4 rounded-2xl" />
             </View>
           ) : slots && slots.length > 0 ? (
             slots.map((slot) => (
@@ -140,13 +148,16 @@ export default function AppointmentDetailScreen() {
       </ScrollView>
 
       {/* Bottom Action Bar */}
-      <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/90 dark:bg-background-dark/90 border-t border-border dark:border-border-dark">
-        <Button 
-          label={isFull ? "Slot Full" : !user?.isVerified ? "Verify Email to Book" : "Book This Slot"}
-          onPress={handleBookSlot}
-          disabled={!selectedSlot || createBooking.isPending || isFull}
-          loading={createBooking.isPending}
-        />
+      <View className="absolute bottom-6 left-6 right-6">
+        <View className="p-4 bg-surface/90 dark:bg-surface-dark/90 rounded-3xl shadow-xl shadow-black/20">
+          <Button 
+            label={isFull ? "Slot Full" : !user?.isVerified ? "Verify Email to Book" : "Book This Slot"}
+            onPress={handleBookSlot}
+            disabled={!selectedSlot || createBooking.isPending || isFull}
+            loading={createBooking.isPending}
+            className="w-full"
+          />
+        </View>
       </View>
     </View>
   );

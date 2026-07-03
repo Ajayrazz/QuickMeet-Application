@@ -11,9 +11,8 @@ export interface Slot {
 }
 
 export const fetchSlots = async (appointmentTypeId: string, dateStr: string): Promise<Slot[]> => {
-  const response = await apiClient.get('/slots', {
+  const response = await apiClient.get(`/appointment-types/${appointmentTypeId}/slots`, {
     params: {
-      appointmentTypeId,
       date: dateStr, // Expected format: YYYY-MM-DD from date-fns
     },
   });

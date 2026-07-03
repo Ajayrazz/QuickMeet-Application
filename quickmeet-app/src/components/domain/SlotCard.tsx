@@ -35,10 +35,10 @@ export const SlotCard = ({ slot, isSelected, onPress }: SlotCardProps) => {
       disabled={disabled}
       onPress={() => onPress(slot)}
       className={cn(
-        "border rounded-xl p-4 mb-3",
+        "rounded-2xl p-5 mb-3 border-2",
         isSelected 
-          ? "border-primary dark:border-primary-light bg-primary/10 dark:bg-primary-dark/20" 
-          : "border-border dark:border-border-dark bg-surface dark:bg-surface-dark",
+          ? "border-primary dark:border-primary-light bg-primary/5 dark:bg-primary-dark/10" 
+          : "border-transparent bg-surface dark:bg-surface-dark shadow-sm",
         disabled && "opacity-50"
       )}
     >

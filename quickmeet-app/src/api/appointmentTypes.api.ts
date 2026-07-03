@@ -16,7 +16,7 @@ export const fetchAppointmentTypes = async (search?: string, category?: string):
   if (category) params.category = category;
   
   const response = await apiClient.get('/appointment-types', { params });
-  return response.data;
+  return response.data.data;
 };
 
 export const fetchAppointmentType = async (id: string): Promise<AppointmentType> => {

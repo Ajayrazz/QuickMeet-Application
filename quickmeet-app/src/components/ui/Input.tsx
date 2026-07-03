@@ -13,25 +13,23 @@ export interface InputProps extends React.ComponentPropsWithoutRef<typeof TextIn
 export const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
   ({ className, label, error, helperText, leftIcon, rightIcon, ...props }, ref) => {
     return (
-      <View className="w-full mb-4">
+      <View className={cn("w-full mb-4", className)}>
         {label && (
-          <Text className="mb-1.5 text-sm font-medium text-text dark:text-text-dark">
+          <Text className="text-sm font-semibold text-text dark:text-text-dark mb-2 ml-1">
             {label}
           </Text>
         )}
         <View
           className={cn(
-            "flex-row items-center rounded-xl border border-border dark:border-border-dark bg-card dark:bg-card-dark px-3 h-12",
-            error && "border-destructive dark:border-destructive-dark"
+            "flex-row items-center rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-transparent px-4 h-14",
+            "focus-within:border-primary dark:focus-within:border-primary",
+            error && "border-destructive dark:border-destructive-dark focus-within:border-destructive dark:focus-within:border-destructive-dark"
           )}
         >
           {leftIcon && <View className="mr-2">{leftIcon}</View>}
           <TextInput
             ref={ref}
-            className={cn(
-              "flex-1 text-base text-text dark:text-text-dark",
-              className
-            )}
+            className="flex-1 text-base text-text dark:text-text-dark"
             placeholderTextColor="#94a3b8"
             {...props}
           />

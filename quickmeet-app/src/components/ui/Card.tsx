@@ -10,7 +10,7 @@ export const Card = React.forwardRef<React.ElementRef<typeof View>, CardProps>(
       <View
         ref={ref}
         className={cn(
-          "rounded-2xl border border-border dark:border-border-dark bg-card dark:bg-card-dark p-4 shadow-sm",
+          "rounded-3xl bg-surface dark:bg-surface-dark p-6 shadow-md dark:border dark:border-border-dark",
           className
         )}
         {...props}

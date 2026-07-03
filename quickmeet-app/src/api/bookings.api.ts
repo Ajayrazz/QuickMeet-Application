@@ -37,7 +37,7 @@ export const cancelBooking = async (id: string): Promise<Booking> => {
 export const fetchMyBookings = async (status?: string): Promise<Booking[]> => {
   const params = status ? { status } : {};
   const response = await apiClient.get('/bookings/me', { params });
-  return response.data;
+  return response.data.data || response.data; // Fallback just in case it's not paginated
 };
 
 export const fetchBooking = async (id: string): Promise<Booking> => {

@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/cn";
 
 const buttonVariants = cva(
-  "flex-row items-center justify-center rounded-xl px-4 py-3 active:opacity-80 disabled:opacity-50",
+  "flex-row items-center justify-center rounded-full px-4 py-3 active:opacity-80 disabled:opacity-50",
   {
     variants: {
       variant: {
-        primary: "bg-primary dark:bg-primary-dark",
-        secondary: "bg-border dark:bg-border-dark",
+        primary: "bg-primary dark:bg-primary-dark shadow-md shadow-primary/30",
+        secondary: "bg-surface dark:bg-surface-dark border border-border dark:border-border-dark",
         ghost: "bg-transparent",
-        destructive: "bg-destructive dark:bg-destructive-dark",
+        destructive: "bg-destructive dark:bg-destructive-dark shadow-sm shadow-destructive/20",
       },
       size: {
-        default: "h-12",
-        sm: "h-10 px-3",
-        lg: "h-14 px-6",
-        icon: "h-12 w-12",
+        default: "h-14",
+        sm: "h-10 px-4",
+        lg: "h-16 px-8",
+        icon: "h-14 w-14",
       },
     },
     defaultVariants: {

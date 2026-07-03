@@ -36,37 +36,21 @@ async function main() {
   console.log('Created admin:', admin.email);
 
   // Create End Users
-  const user1 = await prisma.user.create({
-    data: {
-      email: 'john@example.com',
-      passwordHash: defaultPassword,
-      name: 'John Doe',
-      role: Role.USER,
-      isVerified: true,
-    },
-  });
+  const users = [];
+  for (let i = 1; i <= 15; i++) {
+    const user = await prisma.user.create({
+      data: {
+        email: `user${i}@example.com`,
+        passwordHash: defaultPassword,
+        name: `Dummy User ${i}`,
+        role: Role.USER,
+        isVerified: true,
+      },
+    });
+    users.push(user);
+  }
 
-  const user2 = await prisma.user.create({
-    data: {
-      email: 'jane@example.com',
-      passwordHash: defaultPassword,
-      name: 'Jane Smith',
-      role: Role.USER,
-      isVerified: true,
-    },
-  });
-
-  const user3 = await prisma.user.create({
-    data: {
-      email: 'alice@example.com',
-      passwordHash: defaultPassword,
-      name: 'Alice Cooper',
-      role: Role.USER,
-      isVerified: true,
-    },
-  });
-
-  console.log('Created users: john, jane, alice');
+  console.log(`Created ${users.length} dummy users`);
 
   // Create Appointment Types
   const type1 = await prisma.appointmentType.create({
@@ -93,122 +77,116 @@ async function main() {
     },
   });
 
+  const type3 = await prisma.appointmentType.create({
+    data: {
+      adminId: admin.id,
+      title: 'Career Coaching',
+      description: '1 on 1 career coaching session',
+      category: 'Consulting',
+      location: 'Online (Zoom)',
+      avgServiceDurationMinutes: 45,
+      isActive: true,
+    },
+  });
+
   console.log('Created appointment types');
 
   const today = new Date();
-  
-  // Create Slots
-  // 1. Past Slot (Completed)
-  const pastSlotDate = new Date(today);
-  pastSlotDate.setDate(pastSlotDate.getDate() - 1);
-  pastSlotDate.setHours(10, 0, 0, 0);
+  const slots = [];
 
-  const pastSlotEnd = new Date(pastSlotDate);
-  pastSlotEnd.setMinutes(15);
+  // Create 15 Slots spread across different days and times
+  for (let i = 0; i < 15; i++) {
+    const slotStart = new Date(today);
+    // Spread slots from 5 days ago to 10 days in the future
+    slotStart.setDate(slotStart.getDate() + (i - 5)); 
+    slotStart.setHours(9 + (i % 8), (i % 2) * 30, 0, 0); // times between 9 AM and 4 PM
+    
+    const isPast = slotStart < today;
+    const type = [type1, type2, type3][i % 3];
+    const slotEnd = new Date(slotStart);
+    slotEnd.setMinutes(slotStart.getMinutes() + type.avgServiceDurationMinutes);
+    
+    // capacity between 2 and 5
+    const capacity = 2 + (i % 4);
+    
+    const slot = await prisma.slot.create({
+      data: {
+        appointmentTypeId: type.id,
+        startTime: slotStart,
+        endTime: slotEnd,
+        capacity: capacity,
+        status: isPast ? SlotStatus.COMPLETED : SlotStatus.OPEN,
+      },
+    });
+    slots.push(slot);
+  }
 
-  const pastSlot = await prisma.slot.create({
-    data: {
-      appointmentTypeId: type1.id,
-      startTime: pastSlotDate,
-      endTime: pastSlotEnd,
-      capacity: 3,
-      status: SlotStatus.COMPLETED,
-    },
-  });
+  // Create 10 more slots explicitly for TODAY
+  for (let i = 0; i < 10; i++) {
+    const slotStart = new Date(today);
+    // Times from 8 AM to 5 PM today
+    slotStart.setHours(8 + i, (i % 2) * 30, 0, 0); 
+    
+    const type = [type1, type2, type3][i % 3];
+    const slotEnd = new Date(slotStart);
+    slotEnd.setMinutes(slotStart.getMinutes() + type.avgServiceDurationMinutes);
+    
+    const isPast = slotStart < new Date();
+    const capacity = 3 + (i % 3);
+    
+    const slot = await prisma.slot.create({
+      data: {
+        appointmentTypeId: type.id,
+        startTime: slotStart,
+        endTime: slotEnd,
+        capacity: capacity,
+        status: isPast ? SlotStatus.COMPLETED : SlotStatus.OPEN,
+      },
+    });
+    slots.push(slot);
+  }
 
-  // 2. Today's Slots (Open / Full)
-  const openSlotStart = new Date(today);
-  openSlotStart.setHours(14, 0, 0, 0);
-  const openSlotEnd = new Date(openSlotStart);
-  openSlotEnd.setMinutes(15);
-
-  const openSlot = await prisma.slot.create({
-    data: {
-      appointmentTypeId: type1.id,
-      startTime: openSlotStart,
-      endTime: openSlotEnd,
-      capacity: 5,
-      status: SlotStatus.OPEN,
-    },
-  });
-
-  const fullSlotStart = new Date(today);
-  fullSlotStart.setHours(16, 0, 0, 0);
-  const fullSlotEnd = new Date(fullSlotStart);
-  fullSlotEnd.setMinutes(30);
-
-  const fullSlot = await prisma.slot.create({
-    data: {
-      appointmentTypeId: type2.id,
-      startTime: fullSlotStart,
-      endTime: fullSlotEnd,
-      capacity: 2,
-      status: SlotStatus.OPEN, // We will fill it via bookings, backend auto-updates this but we just set OPEN initially
-    },
-  });
-
-  console.log('Created slots');
+  console.log(`Created ${slots.length} slots`);
 
   // Create Bookings
-  // Past Booking
-  const bookedAtPast = new Date(today);
-  bookedAtPast.setDate(bookedAtPast.getDate() - 2);
+  let bookingCount = 0;
+  for (let i = 0; i < slots.length; i++) {
+    const slot = slots[i];
+    const isPast = slot.startTime < today;
+    
+    // Determine how many bookings for this slot (up to its capacity)
+    const numBookings = (i % slot.capacity) + 1; // 1 to capacity
 
-  await prisma.booking.create({
-    data: {
-      userId: user1.id,
-      slotId: pastSlot.id,
-      status: BookingStatus.SERVED,
-      bookedAt: bookedAtPast,
-      servedAt: pastSlot.startTime,
-    },
-  });
+    for (let j = 0; j < numBookings; j++) {
+      const user = users[(i * j + j) % users.length]; // pick a user deterministically
+      const status = isPast ? (j % 2 === 0 ? BookingStatus.SERVED : BookingStatus.CANCELLED) : BookingStatus.CONFIRMED;
 
-  // Upcoming Bookings for Open Slot
-  await prisma.booking.create({
-    data: {
-      userId: user1.id,
-      slotId: openSlot.id,
-      status: BookingStatus.CONFIRMED,
-      queuePosition: 1,
-    },
-  });
+      const bookedAt = new Date(slot.startTime);
+      bookedAt.setDate(bookedAt.getDate() - 1);
 
-  await prisma.booking.create({
-    data: {
-      userId: user2.id,
-      slotId: openSlot.id,
-      status: BookingStatus.CONFIRMED,
-      queuePosition: 2,
-    },
-  });
+      await prisma.booking.create({
+        data: {
+          userId: user.id,
+          slotId: slot.id,
+          status: status,
+          queuePosition: j + 1,
+          bookedAt: bookedAt,
+          servedAt: status === BookingStatus.SERVED ? slot.startTime : null,
+        },
+      });
+      bookingCount++;
+    }
 
-  // Fill up the Full Slot
-  await prisma.booking.create({
-    data: {
-      userId: user2.id,
-      slotId: fullSlot.id,
-      status: BookingStatus.CONFIRMED,
-      queuePosition: 1,
-    },
-  });
+    // if full, mark it CLOSED
+    if (!isPast && numBookings === slot.capacity) {
+      await prisma.slot.update({
+        where: { id: slot.id },
+        data: { status: SlotStatus.CLOSED },
+      });
+    }
+  }
 
-  await prisma.booking.create({
-    data: {
-      userId: user3.id,
-      slotId: fullSlot.id,
-      status: BookingStatus.CONFIRMED,
-      queuePosition: 2,
-    },
-  });
-
-  // Update fullSlot to CLOSED
-  await prisma.slot.update({
-    where: { id: fullSlot.id },
-    data: { status: SlotStatus.CLOSED },
-  });
-
-  console.log('Created bookings');
+  console.log(`Created ${bookingCount} bookings`);
   console.log('Seeding finished.');
 }
 
