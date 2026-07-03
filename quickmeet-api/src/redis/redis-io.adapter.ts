@@ -1,10 +1,9 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ServerOptions } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
-import { Redis } from 'ioredis';
 import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getRedisOptions } from '../config/redis.config';
+import { createRedisClient } from '../config/redis.config';
 
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: any;
@@ -18,8 +17,10 @@ export class RedisIoAdapter extends IoAdapter {
     const redisUrl =
       configService.get<string>('REDIS_URL') || 'redis://localhost:6379';
 
-    const pubClient = new Redis(redisUrl, getRedisOptions());
-    const subClient = pubClient.duplicate();
+    // We instantiate two separate clients using the factory so BOTH get the 
+    // critical 'error' listeners attached, preventing unhandled exceptions.
+    const pubClient = createRedisClient(redisUrl, 'SocketIO-Pub');
+    const subClient = createRedisClient(redisUrl, 'SocketIO-Sub');
 
     await Promise.all([
       new Promise<void>((resolve) => {
