@@ -50,7 +50,6 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@react-native/jest-preset": "^0.86.0",
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.2.2",
@@ -71,5 +70,8 @@
     "test": "jest",
     "lint": "expo lint"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "@react-native/jest-preset": "0.86.0"
+  }
 }
