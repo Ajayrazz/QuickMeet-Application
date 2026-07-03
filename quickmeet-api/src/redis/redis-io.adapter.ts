@@ -22,13 +22,11 @@ export class RedisIoAdapter extends IoAdapter {
     const subClient = pubClient.duplicate();
 
     await Promise.all([
-      new Promise<void>((resolve, reject) => {
+      new Promise<void>((resolve) => {
         pubClient.once('ready', () => resolve());
-        pubClient.once('error', reject);
       }),
-      new Promise<void>((resolve, reject) => {
+      new Promise<void>((resolve) => {
         subClient.once('ready', () => resolve());
-        subClient.once('error', reject);
       }),
     ]);
 

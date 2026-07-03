@@ -4,7 +4,7 @@ export function getRedisOptions(): RedisOptions {
   return {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
-    family: 0,
+    family: 4, // Force IPv4 to prevent ECONNRESET on Render
     keepAlive: 10000,
     retryStrategy(times) {
       // Exponential backoff capped at 3000ms
